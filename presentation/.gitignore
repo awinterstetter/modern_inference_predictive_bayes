@@ -1,0 +1,5 @@
+# rendered output (GitHub Actions renders the slides itself)
+slides.html
+slides_files/
+.quarto/
+*_files/
