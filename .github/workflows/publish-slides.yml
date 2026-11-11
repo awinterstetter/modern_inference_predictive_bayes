@@ -1,0 +1,61 @@
+# Render the Quarto slides and publish them on GitHub Pages.
+#
+# Runs on every push to main that touches presentation/, and can be started
+# by hand (Actions tab -> "Publish slides" -> Run workflow).
+# One-time setup: Settings -> Pages -> Source: "GitHub Actions".
+#
+# Result: https://<user>.github.io/<repo>/  (the slides are the index page)
+
+name: Publish slides
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "presentation/**"
+      - ".github/workflows/publish-slides.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: 1.11.9   # same version as used locally
+
+      - name: Render slides
+        run: quarto render presentation/slides.qmd
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp presentation/slides.html _site/index.html
+          cp -r presentation/slides_files _site/
+          cp -r presentation/resources _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
