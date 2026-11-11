@@ -1,0 +1,36 @@
+---
+title: "Predictive Bayesian Inference"
+subtitle: "Theory of Modern Inference"
+tagline: "Seminar presentation"
+author: "Alexander Winterstetter"
+supervisor: "Prof. David Rügamer"
+date: 2027-01-07
+date-format: "Do MMMM YYYY"
+title-image: resources/title-figure.svg   # modern look only; remove to show just the text
+format:
+  revealjs:
+    theme: [simple, lmu.scss, lmu-modern.scss]   # drop lmu-modern.scss for the classic look
+    template-partials:
+      - title-slide.html
+    width: 1600
+    height: 900
+    margin: 0
+    slide-number: c/t
+    html-math-method: katex
+    footer: "[Alexander Winterstetter]{} [Predictive Bayesian Inference]{} [{{< meta date >}}]{}"
+---
+
+## What is different?
+[Predictive approach differs from traditional approach in that way]{.subtitle}
+
+## New approach against Bayesian Inference
+
+# Martingale Posteriors
+
+## Predictive resampling
+[Each path imputes future data; the limits form the martingale posterior]{.subtitle}
+
+<iframe class="embed" src="resources/martingale_posterior.html?embed"></iframe>
+
+
+# What are the implications?

@@ -1,0 +1,263 @@
+/*-- scss:defaults --*/
+
+// =====================================================================
+//  LMU "modern" look: an add-on layered on top of lmu.scss
+//
+//  On:   theme: [simple, lmu.scss, lmu-modern.scss]
+//  Off:  theme: [simple, lmu.scss]
+//
+//  Optional in the YAML header:
+//    title-image: resources/some-figure.svg   -> picture on the title
+//                                                slide's right half
+// =====================================================================
+
+$lmu-m-text-soft: #8a8c90;   // footer text
+$lmu-m-line:      #e3e4e6;   // hairlines (footer, tables)
+$lmu-m-accent:    #b9e0c4;   // light green on dark green (kicker)
+
+
+/*-- scss:rules --*/
+
+// ---------------------------------------------------------------------
+//  Base: a bit larger text, calmer title colour
+// ---------------------------------------------------------------------
+.reveal .slides { font-size: 30px; }
+
+.reveal .slides section.slide > h1,
+.reveal .slides section.slide > h2 {
+  font-size: 40px;              // slide titles (# and ##)
+  letter-spacing: -0.01em;
+}
+
+// # and ## headings are centred vertically against the logo (as in the
+// LMU PowerPoint template): title + subtitle as one block, or the title
+// alone if a slide has no subtitle. Re-tune the two margins if you change
+// the font sizes or the logo size.
+.reveal .slides section.slide > h1,
+.reveal .slides section.slide > h2 {
+  margin-top: 31px;          // title alone
+}
+.reveal .slides section.slide:has(> p > .subtitle:only-child) > h1,
+.reveal .slides section.slide:has(> p > .subtitle:only-child) > h2 {
+  margin-top: 9px;           // title + subtitle
+}
+.reveal .subtitle { color: $lmu-grey; }
+
+// ---------------------------------------------------------------------
+//  Content slides: logo at the PowerPoint size (230 x 110), same as in the
+//  title-slide banner
+// ---------------------------------------------------------------------
+.reveal .slides section.slide::before {
+  width: $lmu-logo-w;
+  height: $lmu-logo-h;
+  margin: 0 44px 30px 0;
+}
+.reveal .slides section.slide {
+  padding-top: $lmu-logo-top !important;
+}
+
+// ---------------------------------------------------------------------
+//  Title slide: white, banner on top, green title, figure on the right
+//  (kicker and title stay in the text flow; the section padding places
+//   them. The seal box hangs off the title as ::after, so the title
+//   itself must stay un-positioned.)
+// ---------------------------------------------------------------------
+.reveal .slides > section#title-slide {
+  padding: 265px 70px 0 70px !important;
+  color: $lmu-dark;
+
+  // ---- banner across the top (like the classic template), at the same
+  //      logo size as on the content slides (230 x 110)
+  $bn-top: $lmu-logo-top + 1px;     // logo frames sit ~1px inside the logo box
+  $bn-h: $lmu-logo-h - 2px;
+  $bn-gap: 12px;
+  $bn-seal-w: 215px;
+
+  // green logo, same size + position as on the content slides
+  &::before {
+    left: $lmu-pad-x;
+    top: $lmu-logo-top;
+    width: $lmu-logo-w;
+    height: $lmu-logo-h;
+  }
+
+  // long box next to the logo (holds the course name)
+  &::after {
+    display: block;
+    box-sizing: border-box;
+    left: $lmu-pad-x + $lmu-logo-w + $bn-gap;
+    right: $lmu-pad-x + $bn-seal-w + $bn-gap;
+    top: $bn-top;
+    height: $bn-h;
+    border: 1px solid $lmu-banner-line;
+  }
+
+  // box with the cropped seal
+  .title::after {
+    display: block;
+    box-sizing: border-box;
+    top: $bn-top;
+    right: $lmu-pad-x;
+    width: $bn-seal-w;
+    height: $bn-h;
+    border: 1px solid $lmu-banner-line;
+    background: url($lmu-seal-uri) no-repeat right -26px top -2px / auto 134px;
+    opacity: 1;
+    z-index: auto;
+  }
+
+  // thin green stripe along the left edge
+  .title::before {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+  }
+
+  // course name inside the banner box, on its bottom edge
+  .subtitle {
+    position: absolute;
+    left: $lmu-pad-x + $lmu-logo-w + $bn-gap + 16px;
+    top: $bn-top + $bn-h - 9px - 13px;
+    margin: 0;
+    color: $lmu-green;
+    font-size: 13px;
+    line-height: 1;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .kicker {
+    margin: 0 0 18px 0;
+    color: $lmu-green;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .title {
+    max-width: 1100px;
+    margin: 0 0 22px 0;
+    color: $lmu-green;
+    font-size: 72px;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+  }
+
+
+  // tagline: "Seminar presentation" etc., directly under the title
+  .tagline {
+    margin: 0;
+    color: $lmu-grey;
+    font-size: 30px;
+    line-height: 1.3;
+  }
+
+  .title-meta {
+    position: absolute;
+    left: 70px;
+    bottom: 173px;   // date baseline at ~712px, level with the plot's x-axis
+    font-size: 24px;
+    p, .quarto-title-author-name { margin: 0 0 0.35em 0; font-size: 1em; color: $lmu-dark; }
+    .quarto-title-author-name { font-weight: 700; }
+    .supervisor, .date { color: $lmu-grey; }
+    .supervisor strong { color: $lmu-dark; }
+  }
+
+  // centred in the right part (x 707–1600); change the two sizes to
+  // make the picture bigger/smaller, the position follows automatically
+  // the plot fills 8%–92% of the picture's height; size it so the plot
+  // runs from the title's capitals ($plot-top) to the date line ($plot-bottom)
+  $plot-top: 275px;
+  $plot-bottom: 712px;   // keep in sync with .title-meta bottom (date line)
+  $img-h: ($plot-bottom - $plot-top) / 0.84;
+  $img-w: $img-h * (8.3 / 7.2);      // aspect ratio of the figure
+  .title-image {
+    position: absolute;
+    left: (707px + 1600px) * 0.5 - $img-w * 0.5;
+    top: $plot-top - $img-h * 0.08;
+    width: $img-w;
+    height: $img-h;
+    object-fit: contain;
+    margin: 0;
+  }
+}
+
+// with a title image: keep the text to the left half
+.reveal .slides > section#title-slide:has(.title-image) {
+  .kicker, .title, .subtitle { max-width: 640px; }
+  .title { font-size: 60px; }
+}
+
+// no footer / slide number / menu icon on the title slide (M still opens the menu)
+.reveal:has(#title-slide.present) .footer,
+.reveal:has(#title-slide.present) .slide-number,
+.reveal:has(#title-slide.present) .slide-menu-button { display: none !important; }
+
+// ---------------------------------------------------------------------
+//  Footer: none. Only a small green slide number, bottom right, on the
+//  same right margin as the content (60px of 900 = 0.0667 slide heights).
+//  (The footer: line in the YAML is still used by the classic look.)
+// ---------------------------------------------------------------------
+.reveal .footer,
+.reveal .footer.footer-default { display: none !important; }
+
+.reveal .slide-number {
+  left: auto !important;
+  right: calc(#{$lmu-gap-x} + #{$lmu-screen-h} * 0.0667) !important;
+  bottom: calc(#{$lmu-gap-y} + #{$lmu-screen-h} * 0.03) !important;
+  font-size: calc(#{$lmu-screen-h} * 0.026) !important;   // ~23px on a 900px slide
+  font-weight: 700;
+  color: $lmu-green !important;
+  background: transparent !important;
+  a { color: $lmu-green !important; }
+}
+
+// no progress line and no menu icon (press M for the menu)
+.reveal .progress,
+.reveal .slide-menu-button { display: none !important; }
+
+// ---------------------------------------------------------------------
+//  Boxes: soft background + green accent stripe, no outline
+// ---------------------------------------------------------------------
+.reveal .box {
+  border: none;
+  border-left: 5px solid $lmu-green;
+  border-radius: 6px;
+  background: $lmu-box-bg;
+  padding: 0.5em 0.8em;
+}
+
+.reveal .label {
+  border: none;
+  border-radius: 999px;
+  background: $lmu-box-bg;
+  font-size: 0.85em;
+  padding: 0.3em 1.4em;
+}
+
+.reveal .source {
+  background: transparent;
+  padding: 0;
+  color: $lmu-grey;
+}
+
+// ---------------------------------------------------------------------
+//  Tables: hairlines only
+// ---------------------------------------------------------------------
+.reveal table {
+  thead th {
+    background: transparent;
+    color: $lmu-green;
+    border: none;
+    border-bottom: 2px solid $lmu-green;
+    text-align: left;
+  }
+  tbody td {
+    border: none;
+    border-bottom: 1px solid $lmu-m-line;
+  }
+  tbody tr:nth-child(odd),
+  tbody tr:nth-child(even) { background: transparent; }
+}
