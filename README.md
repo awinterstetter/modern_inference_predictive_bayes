@@ -1,1 +1,1 @@
-# GitHub repository for the code and the seminar presentation for "Modern Inference - Predictive Bayesian Inference
+# Code and seminar presentation for "Modern Inference - Predictive Bayesian Inference"
