@@ -91,7 +91,7 @@ $$
 ## Table of Contents
 
 ::: {.agenda style="padding-top: 1em"}
-1. Where does Bayesian Uncertainty come from?
+1. Where does Bayesian uncertainty come from?
 2. Predictive Bayesian Framework
    1. Predictive Resampling
    2. What can we relax? 
@@ -110,24 +110,50 @@ Where does Bayesian uncertainty come from?
 :::: {.columns style="padding-top: 1em"}
 ::: {.column width="49%"}
 ::: box
-[**Traditional Bayes view**]{style="color: #2F2F2F"}
+[**Traditional Bayesian view**]{style="color: #2F2F2F"}
 
-$\theta$ is itself random under the prior $\pi$.
+Uncertainty comes from treating $\theta$ as random, drawn from the prior $\pi$.
 :::
 :::
 ::: {.column width="2%"}
 :::
 ::: {.column width="49%"}
-::: box
-[**Predictive Bayes view**]{style="color: #2F2F2F"}
+::: {.box .fragment .custom .focus-outline}
+[**Predictive Bayesian view**]{style="color: #2F2F2F"}
 
-We lack knowledge of the missing data $y_{n+1:\infty}$.
+Uncertainty stems from our lack of knowledge about the missing data $y_{n+1:\infty}$.
 :::
 :::
 ::::
 
-## 
-[Predictive approach differs from traditional approach in that way]{.subtitle}
+## Doob's Theorem
+[With infinite data, we could determine the parameter $\Theta$ exactly]{.subtitle}
+
+::: {.box style="margin-top: 2em"}
+[**Theorem (Doob, 1949)**]{style="color: #2F2F2F"}
+
+Let $\Theta \sim \Pi$ with $E[|\Theta|] < \infty$ and $Y_1, Y_2, \dots \mid \Theta \overset{iid}{\sim} f_\Theta$.
+
+Under measurability and identifiability conditions on $f_\theta$,
+
+$$
+\bar\theta_N = E[\Theta \mid Y_{1:N}] \;\longrightarrow\; \Theta \quad \text{a.s.} \qquad \text{for } N \to \infty
+$$
+:::
+
+::: {style="padding-top: 1em"}
+::: fragment
+- We only observe a fixed sample $y_{1:n}$ instead of an infinite sequence $Y_{1:\infty}$, so we cannot pinpoint $\Theta$ exactly
+:::
+
+::: fragment
+[Uncertainty about the actual value of $\Theta$ stems from the possible realizations of $Y_{n+1:\infty}$]{.then}
+:::
+:::
+
+::: {.fragment style="padding-top: 1.5em; text-align: center; font-size: 1.15em; font-weight: 700; color: #2F2F2F"}
+So how do we generate realizations of $Y_{n+1:\infty}$?
+:::
 
 ## New approach against Bayesian Inference
 

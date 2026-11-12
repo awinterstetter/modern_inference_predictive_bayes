@@ -483,3 +483,90 @@ $lmu-letterbox: #2b2b2b;   // colour of the bars around the slide
 .reveal .slides section.slide.question.has-dark-background > p::after {
   background: #fff;
 }
+
+// =====================================================================
+//  Highlight a box on the next click (same slide, same slide number):
+//    ::: {.box .fragment .custom .focus-outline}
+// =====================================================================
+// (no outline before the click: a "transparent" outline still leaves a
+//  faint line in Safari, so the frame is only drawn once it is visible)
+.reveal .slides section .fragment.focus-outline {
+  outline: none;
+}
+.reveal .slides section .fragment.focus-outline.visible {
+  outline: 3px solid $lmu-dark;
+  outline-offset: 2px;
+}
+
+// =====================================================================
+//  Boxes side by side in columns get the same height
+// =====================================================================
+// Quarto lays columns out as inline blocks; a flex row stretches them to
+// the same height, and the box then fills its column
+.reveal .columns:has(> .column > .box:only-child) {
+  display: flex;
+  align-items: stretch;
+}
+.reveal .columns > .column:has(> .box:only-child) {
+  display: flex;
+  flex-direction: column;
+
+  > .box { flex: 1 1 auto; }
+}
+
+// =====================================================================
+//  Answer slides (close a question block), mirror the question slides:
+//    ## {.answer}
+//
+//    ::: qa
+//    [Where does Bayesian uncertainty come from?]{.asked}
+//
+//    The answer in one line
+//
+//    [optional second, smaller line]{.sub}
+//    :::
+// =====================================================================
+.reveal .slides section.slide.answer {
+  top: 0 !important;
+  height: 100% !important;
+
+  > .qa {
+    position: absolute;
+    top: 50%;
+    left: $lmu-pad-x;
+    right: $lmu-pad-x;
+    transform: translateY(-50%);
+    text-align: center;
+
+    p { margin: 0; }
+
+    // the question, repeated small and grey, with the green accent line
+    p:has(> .asked) {
+      color: $lmu-grey;
+      font-size: 0.95em;
+      &::after {
+        content: "";
+        display: block;
+        width: 120px;
+        height: 5px;
+        margin: 0.7em auto 0.9em;
+        background: $lmu-green;
+      }
+    }
+
+    // the answer: large and bold
+    > p:not(:has(> .asked)):not(:has(> .sub)) {
+      font-size: 1.6em;
+      font-weight: 700;
+      line-height: 1.25;
+      color: $lmu-dark;
+    }
+
+    // optional second line
+    p:has(> .sub) {
+      margin-top: 0.5em;
+      font-size: 1.15em;
+      color: $lmu-dark;
+    }
+  }
+}
