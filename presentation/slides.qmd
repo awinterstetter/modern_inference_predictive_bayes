@@ -20,7 +20,113 @@ format:
     footer: "[Alexander Winterstetter]{} [Predictive Bayesian Inference]{} [{{< meta date >}}]{}"
 ---
 
-## What is different?
+## The traditional Bayesian recipe
+
+::: {style="padding-top: 1em"}
+**Step 1 - Obtain the posterior via Bayesian rule**
+
+$\displaystyle \pi(\theta \mid y_{1:n}) \;\propto\; \pi(\theta) \prod_{i=1}^{n} f(y_i \mid \theta)$
+:::
+
+::: {style="padding-top: 1em"}
+**Step 2 - Average the likelihood over the posterior to predict new points**
+
+$\displaystyle p(y_{n+1} \mid y_{1:n}) = \int f(y_{n+1} \mid \theta)\, \pi(\theta \mid y_{1:n})\, d\theta$
+:::
+
+::: {style="padding-top: 1em"}
+**Known shortcomings of traditional Bayes**
+
+- specification of prior $\pi(\theta)$ and likelihood $f(y_{n+1} \mid \theta)$ often challenging
+- often computationally expensive approximations (e.g. MCMC) are necessary
+:::
+
+## Predictive Bayesian Inference
+[In predictive Bayes a posterior is derived without specifying a prior or a likelihood]{.subtitle}
+
+::: {style="padding-top: 2em; font-size: 0.85em"}
+::: box
+$$
+\begin{array}{ccccccc}
+  & & \mathclap{\textbf{Traditional Bayesian Inference}} & & & & \\[1em]
+\underset{\text{likelihood}}{f(y \mid \theta)},\ \underset{\text{prior}}{\pi(\theta)}
+  & \xrightarrow[\text{Bayes}]{\qquad\quad}
+  & \underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}
+  & \xrightarrow[\text{predictive}]{\qquad\quad}
+  & \underset{\text{posterior predictive}}{p(y \mid y_{1:n})}
+  & & \\[-1.2em]
+  & & \hphantom{\underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}}
+  & \hphantom{\xleftarrow[\text{impute future}]{\qquad\quad}}
+  & \hphantom{\underset{\text{predictive}}{p(y \mid y_{1:n})}}
+  & \hphantom{\xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}}
+  & \hphantom{\underset{\text{initial predictive}}{p(y)}}
+\end{array}
+$$
+:::
+
+::: {.box style="margin-top: 2em"}
+$$
+\begin{array}{ccccccc}
+  & & & & \mathclap{\textbf{Predictive Bayesian Inference}} & & \\[1em]
+  & & \underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}
+  & \xleftarrow[\text{impute future}]{\qquad\quad}
+  & \underset{\text{predictive}}{p(y \mid y_{1:n})}
+  & \xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}
+  & \underset{\text{initial predictive}}{p(y)} \\[-1.2em]
+\hphantom{\underset{\text{likelihood}}{f(y \mid \theta)},\ \underset{\text{prior}}{\pi(\theta)}}
+  & \hphantom{\xrightarrow[\text{Bayes}]{\qquad\quad}}
+  & \hphantom{\underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}}
+  & \hphantom{\xrightarrow[\text{predictive}]{\qquad\quad}}
+  & \hphantom{\underset{\text{posterior predictive}}{p(y \mid y_{1:n})}}
+  & &
+\end{array}
+$$
+:::
+:::
+
+::: {style="text-align: right; padding-top: 1.5em"}
+[Diagram adapted from Fong, Holmes & Walker (2023), *Martingale posterior distributions*, JRSS B.]{.source}
+:::
+
+## Table of Contents
+
+::: {.agenda style="padding-top: 1em"}
+1. Where does Bayesian Uncertainty come from?
+2. Predictive Bayesian Framework
+   1. Predictive Resampling
+   2. What can we relax? 
+3. Martingale Posteriors
+:::
+
+## {.question}
+
+Where does Bayesian uncertainty come from?
+
+## Bayesian Perspectives on Uncertainty
+[Where does the uncertainty represented by the posterior come from?]{.subtitle}
+
+![](resources/posterior.svg){.nostretch width=45% fig-align="center"}
+
+:::: {.columns style="padding-top: 1em"}
+::: {.column width="49%"}
+::: box
+[**Traditional Bayes view**]{style="color: #2F2F2F"}
+
+$\theta$ is itself random under the prior $\pi$.
+:::
+:::
+::: {.column width="2%"}
+:::
+::: {.column width="49%"}
+::: box
+[**Predictive Bayes view**]{style="color: #2F2F2F"}
+
+We lack knowledge of the missing data $y_{n+1:\infty}$.
+:::
+:::
+::::
+
+## 
 [Predictive approach differs from traditional approach in that way]{.subtitle}
 
 ## New approach against Bayesian Inference

@@ -56,6 +56,13 @@ $lmu-seal-white-uri: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAxQAAAMgCAMA
 
 /*-- scss:rules --*/
 
+// no text selection on slides: accidental clicks/drags would highlight
+// text (solid black in the `simple` theme) and can scroll the slide
+.reveal .slides {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 // =====================================================================
 //  Regular slides: logo top left, title to its right, content below
 // =====================================================================
@@ -77,6 +84,12 @@ $lmu-seal-white-uri: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAxQAAAMgCAMA
   // everything after the title block starts below the logo
   > *:not(h1):not(h2):not(p:has(> .subtitle:only-child)) {
     clear: left;
+  }
+
+  // reveal.js makes lists inline-block, which ignores `clear` and puts
+  // separate lists side by side; make all lists normal blocks
+  ul, ol {
+    display: block;
   }
 
   > h2 {
@@ -431,3 +444,42 @@ $lmu-letterbox: #2b2b2b;   // colour of the bars around the slide
 }
 .reveal.has-dark-background .slide-number,
 .reveal.has-dark-background .slide-number a { color: #fff !important; }
+
+// =====================================================================
+//  Question divider slides:
+//    ## {.question}
+//
+//    Where does Bayesian uncertainty come from?
+//  white by default; add background-color="#00883A" for a green version
+// =====================================================================
+.reveal .slides section.slide.question {
+  top: 0 !important;
+  height: 100% !important;
+
+  > p {
+    position: absolute;
+    top: 50%;
+    left: $lmu-pad-x;
+    right: $lmu-pad-x;
+    transform: translateY(-50%);
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+
+    // short green accent line under the question
+    &::after {
+      content: "";
+      display: block;
+      width: 120px;
+      height: 5px;
+      margin: 0.6em auto 0;
+      background: $lmu-green;
+    }
+  }
+}
+// on a green background the accent line turns white
+.reveal .slides section.slide.question.has-dark-background > p::after {
+  background: #fff;
+}

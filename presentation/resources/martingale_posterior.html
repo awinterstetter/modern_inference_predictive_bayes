@@ -80,6 +80,8 @@
     --fg: #2F2F2F; --muted: #626468; --grey: #A9A7A0;
   }
   html.embed body { background: #fff; }
+  /* rapid clicks on Next/plot must not select (and grey-highlight) labels */
+  html.embed body, .bar, #ov, canvas { -webkit-user-select: none; user-select: none; }
   html.embed .sub { display: none; }
   html.embed main { max-width: none; padding: 0 4px 4px; }
   html.embed .card { border: 0; padding: 0; border-radius: 0; }
