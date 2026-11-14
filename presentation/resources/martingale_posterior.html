@@ -387,7 +387,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   function animating() { return paths.some(p => p.prog < 1); }
 
   function updateText() {
-    const msgs = ['Click the plot to draw path 1', 'Hover over path 1 to see the predictive density · click for path 2', 'Hover over path 2 to see the predictive density · click for path 3',
+    const msgs = ['Click the plot to draw path 1', 'Click for path 2', 'Click for path 3',
                   'Click to add 997 more paths', '1000 paths drawn: their endpoints form ' + TX('\\pi_N') + '. Reset to resample.'];
     // instructional hint text removed; #hint is only used to surface errors
     const ends = paths.filter(isDone).map(p => p.vals[K]);
@@ -416,7 +416,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     if (stage < 3) {
       if (stage < 2) rng = mulberry32(stage === 0 ? PATH1_SEED : PATH2_SEED);
       paths.push({ vals: stage < 2 ? makePath() : makeSeparatedPath(), hl: stage + 1, prog: 0, start: now,
-                   dur: (stage === 0 ? 1200 : 2200) / LINE_SPEED, k0: 0, k1: stage === 0 ? PAUSE_K : K });
+                   dur: 2200 / LINE_SPEED, k0: 0, k1: K });   // no pause: path 1 runs straight to N
     } else {
       for (let i = 0; i < EXTRA; i++) {
         rng = mulberry32(seed * 31 + i * 104729);
@@ -428,9 +428,9 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   }
 
   // ---- Back / Next ----
-  // steps: 0 empty, 1 path 1 to n+PAUSE_K, 2 path 1 complete, 3 path 2, 4 path 3, 5 all paths
+  // steps: 0 empty, 1 path 1, 2 path 2, 3 path 3, 4 all paths
   let step = 0;
-  const LAST_STEP = 5;
+  const LAST_STEP = 4;
   const backBtn = document.getElementById('back'), nextBtn = document.getElementById('next');
   function updateButtons() { backBtn.disabled = step <= 0; nextBtn.disabled = step >= LAST_STEP && !animating(); }
   function goTo(target) {
@@ -548,8 +548,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
 
   const safe = fn => (...a) => { try { fn(...a); } catch (err) { hint.textContent = 'Error: ' + err.message; console.warn(err); } };
   cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
-  cv.addEventListener('mousemove', safe(onMove));
-  cv.addEventListener('mouseleave', safe(onLeave));
+  // hover tooltips disabled for the talk (advance by clicking only)
   document.addEventListener('keydown', e => {
     if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); onLeave(); safe(advance)(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); safe(back)(); }

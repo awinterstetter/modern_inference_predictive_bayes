@@ -536,35 +536,28 @@ $lmu-letterbox: #2b2b2b;   // colour of the bars around the slide
     left: $lmu-pad-x;
     right: $lmu-pad-x;
     transform: translateY(-50%);
-    text-align: center;
+    text-align: left;
 
     p { margin: 0; }
 
-    // the question, repeated small and grey, with the green accent line
+    // the question, as on the question slide: bold and dark
     p:has(> .asked) {
-      color: $lmu-grey;
-      font-size: 0.95em;
-      &::after {
-        content: "";
-        display: block;
-        width: 120px;
-        height: 5px;
-        margin: 0.7em auto 0.9em;
-        background: $lmu-green;
-      }
+      font-size: 1.4em;
+      font-weight: 700;
+      color: $lmu-dark;
+      margin-bottom: 2em;   // two lines of space before the answer
     }
 
-    // the answer: large and bold
+    // the answer: regular weight, normal reading size
     > p:not(:has(> .asked)):not(:has(> .sub)) {
-      font-size: 1.6em;
-      font-weight: 700;
-      line-height: 1.25;
+      font-size: 1.15em;
+      line-height: 1.4;
       color: $lmu-dark;
     }
 
     // optional second line
     p:has(> .sub) {
-      margin-top: 0.5em;
+      margin-top: 0.3em;
       font-size: 1.15em;
       color: $lmu-dark;
     }

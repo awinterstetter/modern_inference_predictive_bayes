@@ -56,10 +56,10 @@ $$
   & \underset{\text{posterior predictive}}{p(y \mid y_{1:n})}
   & & \\[-1.2em]
   & & \hphantom{\underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}}
-  & \hphantom{\xleftarrow[\text{impute future}]{\qquad\quad}}
-  & \hphantom{\underset{\text{predictive}}{p(y \mid y_{1:n})}}
+  & \hphantom{\xleftarrow[\text{impute new observations}]{\qquad\quad}}
+  & \hphantom{\underset{\substack{\text{predictive density}\\\text{after observing data}}}{p(y \mid y_{1:n})}}
   & \hphantom{\xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}}
-  & \hphantom{\underset{\text{initial predictive}}{p(y)}}
+  & \hphantom{\underset{\substack{\text{initial}\\\text{predictive density}}}{p(y)}}
 \end{array}
 $$
 :::
@@ -69,10 +69,10 @@ $$
 \begin{array}{ccccccc}
   & & & & \mathclap{\textbf{Predictive Bayesian Inference}} & & \\[1em]
   & & \underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}
-  & \xleftarrow[\text{impute future}]{\qquad\quad}
-  & \underset{\text{predictive}}{p(y \mid y_{1:n})}
+  & \xleftarrow[\text{impute new observations}]{\qquad\quad}
+  & \underset{\substack{\text{predictive density}\\\text{after observing data}}}{p(y \mid y_{1:n})}
   & \xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}
-  & \underset{\text{initial predictive}}{p(y)} \\[-1.2em]
+  & \underset{\substack{\text{initial}\\\text{predictive density}}}{p(y)} \\[-1.2em]
 \hphantom{\underset{\text{likelihood}}{f(y \mid \theta)},\ \underset{\text{prior}}{\pi(\theta)}}
   & \hphantom{\xrightarrow[\text{Bayes}]{\qquad\quad}}
   & \hphantom{\underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}}
@@ -147,22 +147,74 @@ $$
 :::
 
 ::: fragment
-[Uncertainty about the actual value of $\Theta$ stems from the possible realizations of $Y_{n+1:\infty}$]{.then}
+[Uncertainty about the actual value of $\Theta$ due to the fact that the realizations $Y_{n+1:\infty}$ are missing]{.then}
 :::
 :::
 
-::: {.fragment style="padding-top: 1.5em; text-align: center; font-size: 1.15em; font-weight: 700; color: #2F2F2F"}
+::: {.fragment style="padding-top: 1.5em; text-align: center; font-weight: 700; color: #2F2F2F"}
 So how do we generate realizations of $Y_{n+1:\infty}$?
 :::
 
-## New approach against Bayesian Inference
-
-# Martingale Posteriors
-
 ## Predictive resampling
-[Each path imputes future data; the limits form the martingale posterior]{.subtitle}
+[The missing observations $Y_{n+1:\infty}$ are simulated using predictive resampling]{.subtitle}
+
+::: {.box style="margin-top: 2em"}
+[**Algorithm: Predictive resampling**]{style="color: #2F2F2F"}
+
+For $b = 1, \dots, B$:
+
+::: {style="padding-left: 1.5em"}
+**(1) Simulate the missing data**
+
+::: {style="padding-left: 1.5em"}
+For $i = n+1, \dots, N$:
+
+::: {style="padding-left: 1.5em"}
+Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
+
+Update $p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})$
+:::
+:::
+
+**(2) Compute the parameter of interest**
+
+::: {style="padding-left: 1.5em"}
+$\bar\theta_N^{(b)} = E[\Theta \mid y_{1:n}, \tilde y_{n+1:N}]$
+:::
+:::
+
+Return $\bar\theta_N^{(1)}, \dots, \bar\theta_N^{(B)}$
+:::
+
+::: {style="text-align: right; padding-top: 1em"}
+[Algorithm adapted from Fong, Holmes & Walker (2023); notation following Battaglia et al. (2026), *Variational predictive resampling*, arXiv:2605.11168.]{.source}
+:::
+
+## Predictive Resampling Framework - Demonstration
+[Each path imputes future data; the limits form the posterior]{.subtitle}
 
 <iframe class="embed" src="resources/martingale_posterior.html?embed"></iframe>
 
+## {.answer}
+
+::: qa
+[Where does Bayesian uncertainty come from?]{.asked}
+
+[From the missing observations $Y_{n+1:\infty}$, which we can simulate using predictive resampling]{.then}
+:::
+
+## {.question}
+
+How to express the traditional Bayesian model in the predictive resampling framework?
+
+
+
+# The predictive resampling framework
+- The predictive r
+
 
 # What are the implications?
+## Backup: Predictive Resampling (with predictive densities) {visibility="uncounted"}
+[Original demo: path 1 pauses after 25 observations; hover shows the predictive density]{.subtitle}
+
+<iframe class="embed" src="resources/martingale_posterior_full.html?embed"></iframe>
