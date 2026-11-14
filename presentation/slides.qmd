@@ -91,11 +91,14 @@ $$
 ## Table of Contents
 
 ::: {.agenda style="padding-top: 1em"}
-1. Where does Bayesian uncertainty come from?
+1. Perspectives on Bayesian Uncertainty
 2. Predictive Bayesian Framework
-   1. Predictive Resampling
-   2. What can we relax? 
+   1. Traditional Bayesian inference in the predicitve framework.
+   2. Generalizing from traditional Bayes in the predictive framework
 3. Martingale Posteriors
+   1. Conditions that shall be fullfilled
+   2. ???
+4. Practical Application
 :::
 
 ## {.question}
@@ -156,34 +159,28 @@ So how do we generate realizations of $Y_{n+1:\infty}$?
 :::
 
 ## Predictive resampling
-[The missing observations $Y_{n+1:\infty}$ are simulated using predictive resampling]{.subtitle}
+[The missing observations $Y_{n+1:\infty}$ are simulated up to a large horizon $N$]{.subtitle}
 
-::: {.box style="margin-top: 2em"}
-[**Algorithm: Predictive resampling**]{style="color: #2F2F2F"}
+::: {.box style="margin-top: 2em; font-size: 0.9em; --r-block-margin: 17px"}
+[**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
+
+**Given:** observed data $y_{1:n}$, initial predictive $p(\cdot \mid y_{1:n})$, update rule, sampling paths $B$, horizon $N$
 
 For $b = 1, \dots, B$:
-
-::: {style="padding-left: 1.5em"}
-**(1) Simulate the missing data**
 
 ::: {style="padding-left: 1.5em"}
 For $i = n+1, \dots, N$:
 
 ::: {style="padding-left: 1.5em"}
-Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
 
-Update $p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})$
-:::
-:::
-
-**(2) Compute the parameter of interest**
-
-::: {style="padding-left: 1.5em"}
-$\bar\theta_N^{(b)} = E[\Theta \mid y_{1:n}, \tilde y_{n+1:N}]$
-:::
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})$
 :::
 
-Return $\bar\theta_N^{(1)}, \dots, \bar\theta_N^{(B)}$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter of interest given the “full” data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}$\theta_N^{(b)} = \theta(y_{1:n}, \tilde y_{n+1:N})$
+:::
+
+Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \theta_\infty^{(b)}$ for large $N$
 :::
 
 ::: {style="text-align: right; padding-top: 1em"}
@@ -209,9 +206,57 @@ How to express the traditional Bayesian model in the predictive resampling frame
 
 
 
-# The predictive resampling framework
-- The predictive r
+# Making the predictive resampling framework explicit
+[The framework is made explicit by three design choices]{.subtitle}
 
+:::: {style="display: flex; align-items: flex-start; gap: 3em; margin-top: 2em"}
+::: {.box style="margin: 0; width: fit-content; flex: none; font-size: 0.9em; --r-block-margin: 17px"}
+[**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
+
+**Given:** $y_{1:n}$, $\textcolor{#00883A}{p(\cdot \mid y_{1:n})}$, $B$, $N$
+
+For $b = 1, \dots, B$:
+
+::: {style="padding-left: 1.5em"}
+For $i = n+1, \dots, N$:
+
+::: {style="padding-left: 1.5em"}
+Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
+
+Update $\textcolor{#D9822B}{p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})}$
+:::
+
+$\theta_N^{(b)} = \textcolor{#2F6DB5}{\theta}(y_{1:n}, \tilde y_{n+1:N})$
+:::
+
+Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
+:::
+
+::: {style="font-size: 0.9em; --r-block-margin: 30px; margin-top: -13px"}
+**Design choices**[\
+**Traditional Bayesian Inference (posterior mean)**]{.fragment .collapse fragment-index="1"}
+
+[**(1)** Initial Predictive Density]{style="color: #00883A"}\
+[$p(\tilde y_{n+1} \mid y_{1:n}) = \int f(\tilde y_{n+1} \mid \theta)\, \pi(\theta \mid y_{1:n})\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+
+[**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}\
+[$\pi(\theta \mid y_{1:n}, \tilde y_{n+1:i}) = \dfrac{f(\tilde y_i \mid \theta)\, \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i-1})}{p(\tilde y_i \mid y_{1:n}, \tilde y_{n+1:i-1})}$\
+$p(\tilde y_{i+1} \mid y_{1:n}, \tilde y_{n+1:i}) = \int f(\tilde y_{i+1} \mid \theta)\, \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i})\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em; line-height: 2.1"}
+
+[**(3)** Statistic of Interest]{style="color: #2F6DB5"}\
+[$\theta(y_{1:n}, \tilde y_{n+1:N}) = E[\Theta \mid y_{1:n}, \tilde y_{n+1:N}]$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+:::
+::::
+
+
+## Predictive Resampling - Traditional Bayesian Inference
+[With the Bayesian design choices, the endpoints recover the posterior $\pi(\theta \mid y_{1:n})$]{.subtitle}
+
+<iframe class="embed" src="resources/martingale_posterior.html?embed&frozen" style="height: 560px"></iframe>
+
+::: {style="padding-top: 0.6em"}
+[Can we go beyond the likelihood $\times$ prior construction?]{.then}
+:::
 
 # What are the implications?
 ## Backup: Predictive Resampling (with predictive densities) {visibility="uncounted"}

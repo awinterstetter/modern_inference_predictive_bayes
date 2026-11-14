@@ -499,6 +499,14 @@ $lmu-letterbox: #2b2b2b;   // colour of the bars around the slide
 }
 
 // =====================================================================
+//  Fragment that takes no space until it appears:
+//    [text]{.fragment .collapse}
+// =====================================================================
+.reveal .slides section .fragment.collapse:not(.visible) {
+  display: none !important;
+}
+
+// =====================================================================
 //  Boxes side by side in columns get the same height
 // =====================================================================
 // Quarto lays columns out as inline blocks; a flex row stretches them to

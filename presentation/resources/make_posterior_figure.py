@@ -1,7 +1,7 @@
 """Figure for the "Characterizing Uncertainty" slide: a posterior for theta.
 
-An arbitrary, slightly skewed density (mixture of two normals), in the
-same LMU colours as the title figure.
+A standard normal density with a double arrow marking its spread
+(+/- 2 sd), in the same LMU colours as the title figure.
 
     python3 make_posterior_figure.py   ->  posterior.svg
 """
@@ -24,8 +24,8 @@ def normal_pdf(x, mu, sd):
 
 
 def main():
-    x = np.linspace(-3.2, 5.2, 1200)
-    dens = 0.7 * normal_pdf(x, 0.8, 0.75) + 0.3 * normal_pdf(x, 2.3, 1.0)
+    x = np.linspace(-4.2, 4.2, 1200)
+    dens = normal_pdf(x, 0.0, 1.0)
 
 
     plt.rcParams.update({
@@ -38,7 +38,13 @@ def main():
     ax.fill_between(x, dens, color=FG, alpha=0.16, linewidth=0)
     ax.plot(x, dens, color=FG, linewidth=3)
 
-    ax.text(3.0, dens.max() * 0.75, r"$\pi(\theta \mid y_{1:n})$", color=TEXT, fontsize=26)
+    # double arrow inside the density, close to the x-axis, not touching the curve
+    y_arr = normal_pdf(2.4, 0.0, 1.0)
+    ax.annotate("", xy=(-2.0, y_arr), xytext=(2.0, y_arr),
+                arrowprops=dict(arrowstyle="<->", color=TEXT, lw=2.2,
+                                shrinkA=0, shrinkB=0, mutation_scale=22))
+
+    ax.text(1.6, dens.max() * 0.75, r"$\pi(\theta \mid y_{1:n})$", color=TEXT, fontsize=26)
 
     ax.set_xlim(x[0], x[-1])
     ax.set_ylim(0, dens.max() * 1.15)

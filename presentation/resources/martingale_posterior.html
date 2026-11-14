@@ -68,6 +68,7 @@
      -> hides the text blocks, white background, light theme, LMU green,
         plot sized to fill the iframe. Without ?embed nothing changes. -->
 <script>
+  if (/[?&#]frozen\b/.test(location.search + location.hash)) document.documentElement.classList.add('frozen');
   if (/[?&#]embed\b/.test(location.search + location.hash)) {
     document.documentElement.classList.add('embed');
     document.documentElement.dataset.theme = 'light';
@@ -104,6 +105,9 @@
   /* on the slides: no values line, no legend */
   html.embed #tip .t2, html.embed #tip .leg { display: none; }
   html.embed #tip .leg i { width: 20px; }
+  /* FROZEN MODE (?frozen): final state, analytic posterior shown, no interaction */
+  html.frozen .bar button, html.frozen .bar label { display: none; }
+  html.frozen canvas#c { cursor: default; }
 </style>
 </head>
 <body>
@@ -132,6 +136,8 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   const n = 10, K = 1000, N = n + K, EXTRA = 997, GREY_A = 0.3;
   // embed mode (slides): Arial like the slide headers, larger labels
   const EMB = document.documentElement.classList.contains('embed');
+  // frozen mode: jump to the final state and show the analytic posterior (only there)
+  const FROZEN = document.documentElement.classList.contains('frozen');
   const FF = EMB ? 'Arial, Helvetica, sans-serif' : 'system-ui, sans-serif';
   const F_LBL = EMB ? 20 : 13, F_TICK = EMB ? 16 : 11;
   const D_TICK = EMB ? 22 : 16, D_LBL = EMB ? 54 : 40, B_PAD = EMB ? 70 : 50;
@@ -347,7 +353,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
       ctx.strokeStyle = accent; ctx.lineWidth = 1.8; ctx.stroke();
     }
     // theoretical limit density once everything is drawn
-    if (stage === 4 && done.length === paths.length) {
+    if (FROZEN && stage === 4 && done.length === paths.length) {
       ctx.setLineDash([5, 4]); ctx.strokeStyle = muted; ctx.lineWidth = 1.3; ctx.beginPath();
       for (let g = 0; g <= 160; g++) {
         const t = ylo + (yhi - ylo) * g / 160, x = L.r0 + normPdf(t, thetaHat, sdPost) * scale;
@@ -398,7 +404,8 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     const sd = m > 1 ? Math.sqrt(ends.reduce((a, b) => a + (b - mean) ** 2, 0) / (m - 1)) : NaN;
     setS(m <= 3
       ? [base].concat(ends.map((e, i) => TX('\\bar\\theta_N^{(' + (i + 1) + ')} = ' + e.toFixed(3)))).join('&ensp;&ensp;&ensp;')
-      : base + `&ensp;&ensp;&ensp;${m} draws: mean ${mean.toFixed(3)}, sd ${sd.toFixed(3)} &ensp;(analytic posterior: ${thetaHat.toFixed(3)}, ${sdPost.toFixed(3)})`);
+      : base + `&ensp;&ensp;&ensp;${m} draws: mean ${mean.toFixed(3)}, sd ${sd.toFixed(3)}` +
+        (FROZEN ? ` &ensp;(analytic posterior: ${thetaHat.toFixed(3)}, ${sdPost.toFixed(3)})` : ''));
   }
 
   function advance() {
@@ -547,9 +554,9 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   function onLeave() { if (hoverK !== null) { hoverK = null; draw(); } tip.style.display = 'none'; }
 
   const safe = fn => (...a) => { try { fn(...a); } catch (err) { hint.textContent = 'Error: ' + err.message; console.warn(err); } };
-  cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
+  if (!FROZEN) cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
   // hover tooltips disabled for the talk (advance by clicking only)
-  document.addEventListener('keydown', e => {
+  if (!FROZEN) document.addEventListener('keydown', e => {
     if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); onLeave(); safe(advance)(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); safe(back)(); }
   });
@@ -565,7 +572,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   } catch (_) {}
   if (window.ResizeObserver) new ResizeObserver(() => layout()).observe(cv);
   try { if (window.renderMathInElement) renderMathInElement(document.querySelector('.sub'), { delimiters: [{ left: '$', right: '$', display: false }] }); } catch (_) {}
-  try { layout(); updateText(); updateButtons(); } catch (err) { hint.textContent = 'Error: ' + err.message; }
+  try { layout(); updateText(); updateButtons(); if (FROZEN) goTo(LAST_STEP); } catch (err) { hint.textContent = 'Error: ' + err.message; }
 })();
 </script>
 </body>
