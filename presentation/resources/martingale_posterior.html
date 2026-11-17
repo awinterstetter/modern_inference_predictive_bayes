@@ -68,6 +68,10 @@
      -> hides the text blocks, white background, light theme, LMU green,
         plot sized to fill the iframe. Without ?embed nothing changes. -->
 <script>
+  if (/[?&#]frozen\b/.test(location.search + location.hash)) document.documentElement.classList.add('frozen');
+  // STEPS MODE (?steps): no clicking; the slide deck sends {mpStep: k} via postMessage
+  // and the plot jumps (without animation) to step k: 0 empty, 1-3 paths 1-3, 4 all paths
+  if (/[?&#]steps\b/.test(location.search + location.hash)) document.documentElement.classList.add('steps');
   if (/[?&#]embed\b/.test(location.search + location.hash)) {
     document.documentElement.classList.add('embed');
     document.documentElement.dataset.theme = 'light';
@@ -80,6 +84,8 @@
     --fg: #2F2F2F; --muted: #626468; --grey: #A9A7A0;
   }
   html.embed body { background: #fff; }
+  /* rapid clicks on Next/plot must not select (and grey-highlight) labels */
+  html.embed body, .bar, #ov, canvas { -webkit-user-select: none; user-select: none; }
   html.embed .sub { display: none; }
   html.embed main { max-width: none; padding: 0 4px 4px; }
   html.embed .card { border: 0; padding: 0; border-radius: 0; }
@@ -102,6 +108,11 @@
   /* on the slides: no values line, no legend */
   html.embed #tip .t2, html.embed #tip .leg { display: none; }
   html.embed #tip .leg i { width: 20px; }
+  /* FROZEN MODE (?frozen): final state, analytic posterior shown, no interaction */
+  html.frozen .bar button, html.frozen .bar label { display: none; }
+  html.frozen canvas#c { cursor: default; }
+  html.steps .bar button, html.steps .bar label { display: none; }
+  html.steps canvas#c { cursor: default; }
 </style>
 </head>
 <body>
@@ -130,6 +141,8 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   const n = 10, K = 1000, N = n + K, EXTRA = 997, GREY_A = 0.3;
   // embed mode (slides): Arial like the slide headers, larger labels
   const EMB = document.documentElement.classList.contains('embed');
+  // frozen mode: jump to the final state and show the analytic posterior (only there)
+  const FROZEN = document.documentElement.classList.contains('frozen');
   const FF = EMB ? 'Arial, Helvetica, sans-serif' : 'system-ui, sans-serif';
   const F_LBL = EMB ? 20 : 13, F_TICK = EMB ? 16 : 11;
   const D_TICK = EMB ? 22 : 16, D_LBL = EMB ? 54 : 40, B_PAD = EMB ? 70 : 50;
@@ -345,7 +358,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
       ctx.strokeStyle = accent; ctx.lineWidth = 1.8; ctx.stroke();
     }
     // theoretical limit density once everything is drawn
-    if (stage === 4 && done.length === paths.length) {
+    if (FROZEN && stage === 4 && done.length === paths.length) {
       ctx.setLineDash([5, 4]); ctx.strokeStyle = muted; ctx.lineWidth = 1.3; ctx.beginPath();
       for (let g = 0; g <= 160; g++) {
         const t = ylo + (yhi - ylo) * g / 160, x = L.r0 + normPdf(t, thetaHat, sdPost) * scale;
@@ -385,7 +398,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   function animating() { return paths.some(p => p.prog < 1); }
 
   function updateText() {
-    const msgs = ['Click the plot to draw path 1', 'Hover over path 1 to see the predictive density · click for path 2', 'Hover over path 2 to see the predictive density · click for path 3',
+    const msgs = ['Click the plot to draw path 1', 'Click for path 2', 'Click for path 3',
                   'Click to add 997 more paths', '1000 paths drawn: their endpoints form ' + TX('\\pi_N') + '. Reset to resample.'];
     // instructional hint text removed; #hint is only used to surface errors
     const ends = paths.filter(isDone).map(p => p.vals[K]);
@@ -396,7 +409,8 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     const sd = m > 1 ? Math.sqrt(ends.reduce((a, b) => a + (b - mean) ** 2, 0) / (m - 1)) : NaN;
     setS(m <= 3
       ? [base].concat(ends.map((e, i) => TX('\\bar\\theta_N^{(' + (i + 1) + ')} = ' + e.toFixed(3)))).join('&ensp;&ensp;&ensp;')
-      : base + `&ensp;&ensp;&ensp;${m} draws: mean ${mean.toFixed(3)}, sd ${sd.toFixed(3)} &ensp;(analytic posterior: ${thetaHat.toFixed(3)}, ${sdPost.toFixed(3)})`);
+      : base + `&ensp;&ensp;&ensp;${m} draws: mean ${mean.toFixed(3)}, sd ${sd.toFixed(3)}` +
+        (FROZEN ? ` &ensp;(analytic posterior: ${thetaHat.toFixed(3)}, ${sdPost.toFixed(3)})` : ''));
   }
 
   function advance() {
@@ -414,7 +428,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     if (stage < 3) {
       if (stage < 2) rng = mulberry32(stage === 0 ? PATH1_SEED : PATH2_SEED);
       paths.push({ vals: stage < 2 ? makePath() : makeSeparatedPath(), hl: stage + 1, prog: 0, start: now,
-                   dur: (stage === 0 ? 1200 : 2200) / LINE_SPEED, k0: 0, k1: stage === 0 ? PAUSE_K : K });
+                   dur: 2200 / LINE_SPEED, k0: 0, k1: K });   // no pause: path 1 runs straight to N
     } else {
       for (let i = 0; i < EXTRA; i++) {
         rng = mulberry32(seed * 31 + i * 104729);
@@ -426,9 +440,9 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   }
 
   // ---- Back / Next ----
-  // steps: 0 empty, 1 path 1 to n+PAUSE_K, 2 path 1 complete, 3 path 2, 4 path 3, 5 all paths
+  // steps: 0 empty, 1 path 1, 2 path 2, 3 path 3, 4 all paths
   let step = 0;
-  const LAST_STEP = 5;
+  const LAST_STEP = 4;
   const backBtn = document.getElementById('back'), nextBtn = document.getElementById('next');
   function updateButtons() { backBtn.disabled = step <= 0; nextBtn.disabled = step >= LAST_STEP && !animating(); }
   function goTo(target) {
@@ -545,10 +559,14 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   function onLeave() { if (hoverK !== null) { hoverK = null; draw(); } tip.style.display = 'none'; }
 
   const safe = fn => (...a) => { try { fn(...a); } catch (err) { hint.textContent = 'Error: ' + err.message; console.warn(err); } };
-  cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
-  cv.addEventListener('mousemove', safe(onMove));
-  cv.addEventListener('mouseleave', safe(onLeave));
-  document.addEventListener('keydown', e => {
+  const STEPS = document.documentElement.classList.contains('steps');
+  if (STEPS) window.addEventListener('message', e => {
+    const k = e.data && e.data.mpStep;
+    if (Number.isInteger(k) && k >= 0 && k <= LAST_STEP && k !== step) safe(goTo)(k);
+  });
+  if (!FROZEN && !STEPS) cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
+  // hover tooltips disabled for the talk (advance by clicking only)
+  if (!FROZEN && !STEPS) document.addEventListener('keydown', e => {
     if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); onLeave(); safe(advance)(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); safe(back)(); }
   });
@@ -564,7 +582,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   } catch (_) {}
   if (window.ResizeObserver) new ResizeObserver(() => layout()).observe(cv);
   try { if (window.renderMathInElement) renderMathInElement(document.querySelector('.sub'), { delimiters: [{ left: '$', right: '$', display: false }] }); } catch (_) {}
-  try { layout(); updateText(); updateButtons(); } catch (err) { hint.textContent = 'Error: ' + err.message; }
+  try { layout(); updateText(); updateButtons(); if (FROZEN) goTo(LAST_STEP); } catch (err) { hint.textContent = 'Error: ' + err.message; }
 })();
 </script>
 </body>

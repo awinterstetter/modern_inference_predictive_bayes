@@ -3,3 +3,6 @@ slides.html
 slides_files/
 .quarto/
 *_files/
+
+/.quarto/
+**/*.quarto_ipynb
