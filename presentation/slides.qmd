@@ -108,14 +108,17 @@ Where does Bayesian uncertainty come from?
 ## Bayesian Perspectives on Uncertainty
 [Where does the uncertainty represented by the posterior come from?]{.subtitle}
 
-![](resources/posterior.svg){.nostretch width=45% fig-align="center"}
+![](resources/posterior.svg){.nostretch width=40% fig-align="center"}
 
-:::: {.columns style="padding-top: 1em"}
+:::: {.columns style="margin-top: -0.5em"}
 ::: {.column width="49%"}
 ::: box
 [**Traditional Bayesian view**]{style="color: #2F2F2F"}
 
-Uncertainty comes from treating $\theta$ as random, drawn from the prior $\pi$.
+- $\theta$ is random, drawn from the prior $\pi$
+- Posterior describes uncertainty about $\theta$
+
+$\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
 :::
 :::
 ::: {.column width="2%"}
@@ -124,7 +127,10 @@ Uncertainty comes from treating $\theta$ as random, drawn from the prior $\pi$.
 ::: {.box .fragment .custom .focus-outline}
 [**Predictive Bayesian view**]{style="color: #2F2F2F"}
 
-Uncertainty stems from our lack of knowledge about the missing data $y_{n+1:\infty}$.
+- $\theta = \theta(y_{1:\infty})$ is a function of the data
+- Posterior describes uncertainty about $y_{n+1:\infty}$
+
+$\Rightarrow$ **Source of uncertainty:** missing observations
 :::
 :::
 ::::
@@ -190,7 +196,29 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \th
 ## Predictive Resampling Framework - Demonstration
 [Each path imputes future data; the limits form the posterior]{.subtitle}
 
-<iframe class="embed" src="resources/martingale_posterior.html?embed"></iframe>
+<iframe class="embed mp-steps" src="resources/martingale_posterior.html?embed&steps"></iframe>
+
+<!-- each arrow press pops up the next stage: path 1, path 2, path 3, all paths -->
+::: {style="display: none"}
+[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}
+:::
+
+```{=html}
+<script>
+window.addEventListener('load', () => {
+  if (!window.Reveal) return;
+  const sync = () => {
+    const s = Reveal.getCurrentSlide();
+    const fr = s && s.querySelector('iframe.mp-steps');
+    if (!fr || !fr.contentWindow) return;
+    const k = s.querySelectorAll('.mp-step.visible').length;
+    fr.contentWindow.postMessage({ mpStep: k }, '*');
+  };
+  ['fragmentshown', 'fragmenthidden', 'slidechanged', 'ready'].forEach(ev => Reveal.on(ev, sync));
+  document.querySelectorAll('iframe.mp-steps').forEach(fr => fr.addEventListener('load', sync));
+});
+</script>
+```
 
 ## {.answer}
 
@@ -202,7 +230,7 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \th
 
 ## {.question}
 
-How to express the traditional Bayesian model in the predictive resampling framework?
+How to express traditional Bayesian inference in terms of predictive Bayesian inference?
 
 
 
@@ -234,17 +262,18 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
 
 ::: {style="font-size: 0.9em; --r-block-margin: 30px; margin-top: -13px"}
 **Design choices**[\
-**Traditional Bayesian Inference (posterior mean)**]{.fragment .collapse fragment-index="1"}
+**Traditional Bayesian Inference (posterior mean)**\
+[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i})$]{style="font-weight: 400; font-size: 0.82em"}]{.fragment .collapse fragment-index="1"}
 
 [**(1)** Initial Predictive Density]{style="color: #00883A"}\
-[$p(\tilde y_{n+1} \mid y_{1:n}) = \int f(\tilde y_{n+1} \mid \theta)\, \pi(\theta \mid y_{1:n})\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+[$p_n(y) = \int f(y \mid \theta)\, \pi_n(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
 
 [**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}\
-[$\pi(\theta \mid y_{1:n}, \tilde y_{n+1:i}) = \dfrac{f(\tilde y_i \mid \theta)\, \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i-1})}{p(\tilde y_i \mid y_{1:n}, \tilde y_{n+1:i-1})}$\
-$p(\tilde y_{i+1} \mid y_{1:n}, \tilde y_{n+1:i}) = \int f(\tilde y_{i+1} \mid \theta)\, \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i})\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em; line-height: 2.1"}
+[$\pi_i(\theta) \propto f(\tilde y_i \mid \theta)\, \pi_{i-1}(\theta)$\
+$p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em; line-height: 1.8"}
 
 [**(3)** Statistic of Interest]{style="color: #2F6DB5"}\
-[$\theta(y_{1:n}, \tilde y_{n+1:N}) = E[\Theta \mid y_{1:n}, \tilde y_{n+1:N}]$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+[$\theta_N = E_{\pi_N}[\Theta] = \int \theta\, \pi_N(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
 :::
 ::::
 
@@ -255,11 +284,85 @@ $p(\tilde y_{i+1} \mid y_{1:n}, \tilde y_{n+1:i}) = \int f(\tilde y_{i+1} \mid \
 <iframe class="embed" src="resources/martingale_posterior.html?embed&frozen" style="height: 560px"></iframe>
 
 ::: {style="padding-top: 0.6em"}
-[Can we go beyond the likelihood $\times$ prior construction?]{.then}
+[Why does the predictive Bayes posterior approximately coincide with the traditional Bayes posterior?]{.then}
 :::
+
+## Condition for predictive Bayes to coincide with traditional Bayes
+[De Finetti's representation theorem links traditional Bayesian inference to a predictive framework]{.subtitle}
+
+- The predictive sequence defines a joint density: $\prod_{i=1}^{n} p(y_i \mid y_{1:i-1}) = p(y_1, \dots, y_n)$ for all $n$
+
+::: {.box style="margin-top: 1em"}
+[**Theorem (de Finetti, 1937)**]{style="color: #2F2F2F"}
+
+Let $Y_1, Y_2, \dots$ be an infinite exchangeable sequence, i.e. $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$. Then there exists a prior $\pi$ such that for all $n$
+
+$$
+p(y_1, \dots, y_n) = \int \prod_{i=1}^{n} f(y_i \mid \theta)\, \pi(\theta)\, d\theta.
+$$
+:::
+
+
+- The sequence $Y_1, Y_2, \dots$ generated by the predictives $p(y_i \mid y_{1:i-1})$ must be exchangeable
+
+[Then predictive resampling recovers the traditional Bayesian posterior]{.then}
+
+## {.answer}
+
+::: qa
+[How to express traditional Bayesian inference in terms of predictive Bayesian inference?]{.asked}
+
+[Use the Bayesian posterior predictive as the update rule]{.then}
+
+[The sequence of generated random variables $Y_{n+1}, Y_{n+2}, \dots$ must be **exchangeable** to recover the traditional Bayesian posterior]{.then}
+:::
+
+## {.question}
+
+Can predictive Bayesian inference generalize from traditional Bayesian inference?
+
+## Requirements for a valid martingale posterior
+[What must hold for predictive coherence]{.subtitle}
+
+::: {style="padding-top: 1.2em"}
+:::
+
+- The idea of priors and likelihoods is dropped
+- Instead, 1-step ahead predictive distributions are specified to predict the missing data\
+  $P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}), \quad i = n, n+1, \dots$
+
+[The posterior is inferred from an ensemble of "complete" datasets]{.then}
+
+::: {style="padding-top: 0.8em"}
+Following Fong et al. (2023), two conditions must hold for the sequence of predictive distributions $P_i(y)$ so that the ensemble of sequences forms a valid posterior:
+:::
+
+:::: {.columns style="padding-top: 0.4em"}
+::: {.column width="49%"}
+::: box
+[**Condition 1 (Existence)**]{style="color: #2F2F2F"}
+
+$P_{n+1}(y), P_{n+2}(y), \dots$ converges almost surely to a random distribution function $P_\infty(y)$
+:::
+:::
+::: {.column width="2%"}
+:::
+::: {.column width="49%"}
+::: box
+[**Condition 2 (Unbiasedness)**]{style="color: #2F2F2F"}
+
+$E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
+:::
+:::
+::::
 
 # What are the implications?
 ## Backup: Predictive Resampling (with predictive densities) {visibility="uncounted"}
 [Original demo: path 1 pauses after 25 observations; hover shows the predictive density]{.subtitle}
 
 <iframe class="embed" src="resources/martingale_posterior_full.html?embed"></iframe>
+
+## Backup: Exchangeability in predictive resampling {visibility="uncounted"}
+[Reordering the imputed observations changes the path, but not the endpoint $\bar\theta_N$]{.subtitle}
+
+<iframe class="embed" src="resources/exchangeability_shuffle.html" style="height: 560px"></iframe>

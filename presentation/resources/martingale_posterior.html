@@ -69,6 +69,9 @@
         plot sized to fill the iframe. Without ?embed nothing changes. -->
 <script>
   if (/[?&#]frozen\b/.test(location.search + location.hash)) document.documentElement.classList.add('frozen');
+  // STEPS MODE (?steps): no clicking; the slide deck sends {mpStep: k} via postMessage
+  // and the plot jumps (without animation) to step k: 0 empty, 1-3 paths 1-3, 4 all paths
+  if (/[?&#]steps\b/.test(location.search + location.hash)) document.documentElement.classList.add('steps');
   if (/[?&#]embed\b/.test(location.search + location.hash)) {
     document.documentElement.classList.add('embed');
     document.documentElement.dataset.theme = 'light';
@@ -108,6 +111,8 @@
   /* FROZEN MODE (?frozen): final state, analytic posterior shown, no interaction */
   html.frozen .bar button, html.frozen .bar label { display: none; }
   html.frozen canvas#c { cursor: default; }
+  html.steps .bar button, html.steps .bar label { display: none; }
+  html.steps canvas#c { cursor: default; }
 </style>
 </head>
 <body>
@@ -554,9 +559,14 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
   function onLeave() { if (hoverK !== null) { hoverK = null; draw(); } tip.style.display = 'none'; }
 
   const safe = fn => (...a) => { try { fn(...a); } catch (err) { hint.textContent = 'Error: ' + err.message; console.warn(err); } };
-  if (!FROZEN) cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
+  const STEPS = document.documentElement.classList.contains('steps');
+  if (STEPS) window.addEventListener('message', e => {
+    const k = e.data && e.data.mpStep;
+    if (Number.isInteger(k) && k >= 0 && k <= LAST_STEP && k !== step) safe(goTo)(k);
+  });
+  if (!FROZEN && !STEPS) cv.addEventListener('click', safe(e => { onLeave(); advance(); }));
   // hover tooltips disabled for the talk (advance by clicking only)
-  if (!FROZEN) document.addEventListener('keydown', e => {
+  if (!FROZEN && !STEPS) document.addEventListener('keydown', e => {
     if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); onLeave(); safe(advance)(); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); safe(back)(); }
   });
