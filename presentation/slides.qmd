@@ -129,7 +129,7 @@ $\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
 [**Predictive Bayesian view**]{style="color: #2F2F2F"}
 
 - $\theta = \theta(y_{1:\infty})$ is a function of the data
-- Posterior describes uncertainty about $y_{n+1:\infty}$
+- Posterior describes uncertainty about $Y_{n+1:\infty}$
 
 $\Rightarrow$ **Source of uncertainty:** missing observations
 :::
@@ -137,27 +137,27 @@ $\Rightarrow$ **Source of uncertainty:** missing observations
 ::::
 
 ## Doob's Theorem
-[With infinite data, we could determine the parameter $\Theta$ exactly]{.subtitle}
+[With infinite data, we could determine the parameter $\theta$ exactly]{.subtitle}
 
 ::: {.box style="margin-top: 2em"}
 [**Theorem (Doob, 1949)**]{style="color: #2F2F2F"}
 
-Let $\Theta \sim \Pi$ with $E[|\Theta|] < \infty$ and $Y_1, Y_2, \dots \mid \Theta \overset{iid}{\sim} f_\Theta$.
+Let $\theta \sim \pi$ with $E[|\theta|] < \infty$ and $Y_1, Y_2, \dots \mid \theta \overset{iid}{\sim} f(\cdot \mid \theta)$.
 
-Under measurability and identifiability conditions on $f_\theta$,
+Under measurability and identifiability conditions on $f(\cdot \mid \theta)$,
 
 $$
-\bar\theta_N = E[\Theta \mid Y_{1:N}] \;\longrightarrow\; \Theta \quad \text{a.s.} \qquad \text{for } N \to \infty
+\bar\theta_N = E[\theta \mid Y_{1:N}] \;\longrightarrow\; \theta \quad \text{a.s.} \qquad \text{for } N \to \infty
 $$
 :::
 
 ::: {style="padding-top: 1em"}
 ::: fragment
-- We only observe a fixed sample $y_{1:n}$ instead of an infinite sequence $Y_{1:\infty}$, so we cannot pinpoint $\Theta$ exactly
+- We only observe a fixed sample $y_{1:n}$ instead of an infinite sequence $Y_{1:\infty}$, so we cannot pinpoint $\theta$ exactly
 :::
 
 ::: fragment
-[Uncertainty about the actual value of $\Theta$ due to the fact that the realizations $Y_{n+1:\infty}$ are missing]{.then}
+[Uncertainty about the actual value of $\theta$ due to the fact that the realizations $Y_{n+1:\infty}$ are missing]{.then}
 :::
 :::
 
@@ -168,10 +168,10 @@ So how do we generate realizations of $Y_{n+1:\infty}$?
 ## Predictive resampling
 [The missing observations $Y_{n+1:\infty}$ are simulated up to a large horizon $N$]{.subtitle}
 
-::: {.box style="margin-top: 0.8em; font-size: 0.9em; --r-block-margin: 17px"}
+::: {.box style="margin-top: 0.4em; font-size: 0.9em; --r-block-margin: 15px"}
 [**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
 
-**Given:** observed data $y_{1:n}$, initial predictive $p(\cdot \mid y_{1:n})$, update rule, sampling paths $B$, horizon $N$
+Compute $p_n$ from the observed data $y_{1:n}$, with $p_i = p(\cdot \mid y_{1:n}, Y_{n+1:i})$; choose $B$ paths and a horizon $N > n$
 
 For $b = 1, \dots, B$:
 
@@ -179,22 +179,22 @@ For $b = 1, \dots, B$:
 For $i = n+1, \dots, N$:
 
 ::: {style="padding-left: 1.5em"}
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $Y_i \sim p_{i-1}$
 
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $p_i \leftarrow \{p_{i-1}, Y_i\}$
 :::
 
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter of interest given the “full” data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}$\theta_N^{(b)} = \theta(y_{1:n}, \tilde y_{n+1:N})$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter of interest given the “full” data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Evaluate $\theta_N^{(b)} = \theta(y_{1:n}, Y_{n+1:N})$
 :::
 
 Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \theta_\infty^{(b)}$ for large $N$
 :::
 
-::: {style="padding-top: 0.6em"}
+::: {style="padding-top: 0.3em"}
 [Predictive resampling is utilized to express uncertainty about the parameter estimated from $y_{1:n}$]{.then}
 :::
 
-::: {style="text-align: right; padding-top: 0.4em"}
+::: {style="text-align: right; padding-top: 0.1em"}
 [Algorithm adapted from Fong, Holmes & Walker (2023); notation following Battaglia et al. (2026), *Variational predictive resampling*, arXiv:2605.11168.]{.source}
 :::
 
@@ -246,7 +246,7 @@ How to express traditional Bayesian inference in terms of predictive Bayesian in
 ::: {.box style="margin: 0; width: fit-content; flex: none; font-size: 0.9em; --r-block-margin: 17px"}
 [**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
 
-**Given:** $y_{1:n}$, $\textcolor{#00883A}{p(\cdot \mid y_{1:n})}$, $B$, $N$
+Compute $\textcolor{#00883A}{p_n}$ from $y_{1:n}$; choose $B$, $N$
 
 For $b = 1, \dots, B$:
 
@@ -254,12 +254,12 @@ For $b = 1, \dots, B$:
 For $i = n+1, \dots, N$:
 
 ::: {style="padding-left: 1.5em"}
-Sample $\tilde y_i \sim p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1})$
+Sample $Y_i \sim p_{i-1}$
 
-Update $\textcolor{#D9822B}{p(\cdot \mid y_{1:n}, \tilde y_{n+1:i-1}) \mapsto p(\cdot \mid y_{1:n}, \tilde y_{n+1:i})}$
+Update $\textcolor{#D9822B}{p_i \leftarrow \{p_{i-1}, Y_i\}}$
 :::
 
-$\theta_N^{(b)} = \textcolor{#2F6DB5}{\theta}(y_{1:n}, \tilde y_{n+1:N})$
+Evaluate $\theta_N^{(b)} = \textcolor{#2F6DB5}{\theta}(y_{1:n}, Y_{n+1:N})$
 :::
 
 Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
@@ -268,17 +268,17 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
 ::: {style="font-size: 0.9em; --r-block-margin: 30px; margin-top: -13px"}
 **Design choices**[\
 **Traditional Bayesian Inference (posterior mean)**\
-[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, \tilde y_{n+1:i})$]{style="font-weight: 400; font-size: 0.82em"}]{.fragment .collapse fragment-index="1"}
+[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, Y_{n+1:i})$]{style="font-weight: 400; font-size: 0.82em"}]{.fragment .collapse fragment-index="1"}
 
 [**(1)** Initial Predictive Density]{style="color: #00883A"}\
 [$p_n(y) = \int f(y \mid \theta)\, \pi_n(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
 
 [**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}\
-[$\pi_i(\theta) \propto f(\tilde y_i \mid \theta)\, \pi_{i-1}(\theta)$\
+[$\pi_i(\theta) \propto f(Y_i \mid \theta)\, \pi_{i-1}(\theta)$\
 $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em; line-height: 1.8"}
 
 [**(3)** Statistic of Interest]{style="color: #2F6DB5"}\
-[$\theta_N = E_{\pi_N}[\Theta] = \int \theta\, \pi_N(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+[$\theta_N = \bar\theta_N = \int \theta\, \pi_N(\theta)\, d\theta$ (posterior mean)]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
 :::
 ::::
 
@@ -333,7 +333,7 @@ Can predictive Bayesian inference generalize from traditional Bayesian inference
 :::
 
 - Instead of prior $\times$ likelihood, 1-step ahead predictive distributions are specified to predict the missing data\
-  $P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}), \quad i = n, n+1, \dots$
+  $P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}), \quad i = n, n+1, \dots$ (distribution function of the predictive $p_i$)
 
 [The posterior is inferred from an ensemble of "complete" datasets]{.then}
 
@@ -368,53 +368,35 @@ $E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
 ![](resources/conditions.svg){.nostretch width=100% fig-align="center"}
 
 ## Settings in which predictive coherence holds
-[Predictive coherence holds in a conditionally identically distributed (c.i.d.) data setting]{.subtitle}
+[c.i.d. predictives form a martingale, which guarantees predictive coherence]{.subtitle}
 
-::: {style="padding-top: 1.2em"}
-:::
-
-$$
-P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \quad \text{for all } k > 0
-$$
-
-- The sequence $Y_{n+1}, Y_{n+2}, \dots$ generated by the predictives $P_i(y)$ shall be **c.i.d.** for predictive coherence to hold (Berti et al., 2004)
-
-[Given $y_{1:n}$, the predictions for $Y_{n+1}$ and $Y_{n+50}$ are drawn from the same predictive distribution function]{.then}
-
-[Once a new data point $y_{i+1}$ has been observed or simulated, the predictive distribution function $P_{i+1}(y)$ differs from $P_i(y)$]{.then}
-
-:::: {.columns style="padding-top: 1em"}
-::: {.column width="49%"}
+:::: {.columns style="padding-top: 1.2em"}
+::: {.column width="46%"}
 ::: box
-[**c.i.d. sequence**]{style="color: #2F2F2F"}
+[**c.i.d. sequence** (Berti et al., 2004)]{style="color: #2F2F2F"}
 
-The joint probability may depend on the order in which the observations were generated
+$P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
+
+[Given $y_{1:n}$, $Y_{n+1}$ and $Y_{n+50}$ follow the same predictive]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
-::: {.column width="2%"}
+::: {.column style="width: 8%; text-align: center; font-size: 1.8em; padding-top: 1.1em"}
+$\Leftrightarrow$
 :::
-::: {.column width="49%"}
+::: {.column width="46%"}
 ::: box
-[**Exchangeable sequence**]{style="color: #2F2F2F"}
+[**Martingale property**]{style="color: #2F2F2F"}
 
-The joint probability is invariant to the order in which the observations were generated
+$E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
+
+[On average, the next predictive equals the current one]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
 ::::
 
-## Relevance of the martingale property
-[The sequence of predictives shall be a martingale to achieve predictive coherence]{.subtitle}
+- Exchangeable $\subset$ c.i.d.: the order of the observations may matter, so predictives beyond prior $\times$ likelihood are allowed
 
-::: {style="padding-top: 1.2em"}
-:::
-
-- The generated observations $Y_{n+1}, \dots, Y_N$ are c.i.d. $\Leftrightarrow$ the sequence of predictives $P_n(y), P_{n+1}(y), \dots, P_{N-1}(y)$ forms a martingale
-  $$
-  E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \quad \text{for all } y \qquad \text{(martingale property)}
-  $$
-- It can be shown that if the martingale property holds for $P_n(y), P_{n+1}(y), \dots$, this sequence of predictives fulfils both conditions of predictive coherence (Berti et al., 2004; Fong et al., 2023)
-
-[Predictive resampling with martingale predictives yields the **martingale posterior**]{.then}
+[Martingale predictives fulfil both conditions of predictive coherence and yield the **martingale posterior** (Berti et al., 2004; Fong et al., 2023)]{.then}
 
 ## Martingale posterior
 [The martingale posterior yields valid parameter posteriors without relying on a prior or likelihood]{.subtitle}
@@ -427,7 +409,22 @@ $$
 $$
 :::
 
-- For $N \to \infty$, $\theta_N \to \theta_\infty$ almost surely, so the finite martingale posterior $\Pi_N$ approaches the martingale posterior $\Pi_\infty$
+- Predictive resampling with horizon $N$ returns samples from $\Pi_N$
+- Under predictive coherence, $\Pi_N$ approaches the **martingale posterior** $\Pi_\infty$ as $N \to \infty$
+
+## {.question}
+
+Practical applications of predictive Bayesian inference
+
+## Brainstorming
+
+- Predictive Bayesian inference utilized in the traditional Bayesian framework
+
+[Variational predictive resampling (Battaglia et al., 2026)]{.then}
+
+- Utilization of the martingale posterior
+
+[Copula update (Fong et al., 2023)]{.then}
 
 # What are the implications?
 ## Backup: Predictive Resampling (with predictive densities) {visibility="uncounted"}
@@ -453,3 +450,17 @@ $$
 [i.i.d. $\subset$ exchangeable $\subset$ c.i.d.: each step outward drops one restriction, a valid posterior remains]{.subtitle}
 
 ![](resources/venn.svg){.nostretch width=88% fig-align="center"}
+
+## Backup: Martingale posterior (limit definition) {visibility="uncounted"}
+[Definition 1 of Fong et al. (2023): the limit of the finite martingale posterior]{.subtitle}
+
+::: {.box style="margin-top: 1.5em"}
+[**Definition (martingale posterior)** (Fong et al., 2023)]{style="color: #2F2F2F"}
+
+$$
+\Pi_\infty(\theta_\infty \le t \mid y_{1:n}) = \int \mathbb{1}\{\theta(F_\infty) \le t\}\; d\Pi(F_\infty \mid y_{1:n})
+$$
+:::
+
+- $F_\infty$: empirical distribution of the completed dataset $y_{1:n}, Y_{n+1:\infty}$
+- Under c.i.d., $F_\infty = P_\infty$ almost surely, so $\theta(F_\infty) = \theta(P_\infty)$ (Berti et al., 2004; Fong et al., 2023)
