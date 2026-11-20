@@ -57,9 +57,9 @@ def main():
     rng = np.random.default_rng(31542)
     z = rng.standard_normal((B, K))
     panels = [
-        ("valid", "Valid (Bayesian update)", "converges and stays centred", GREEN),
-        ("existence", "Condition 1 (Existence) violated", "paths never settle: no $P_\\infty$", ORANGE),
-        ("unbiased", "Condition 2 (Unbiasedness) violated", "paths settle, but drift away", ORANGE),
+        ("valid", "Valid (Bayesian update)", "$P_\\infty$ exists and $E[P_\\infty \\mid y_{1:n}] = P_n$", GREEN),
+        ("existence", "Condition 1 (Existence) violated", "no limit $P_\\infty$", ORANGE),
+        ("unbiased", "Condition 2 (Unbiasedness) violated", "$P_\\infty$ exists, but $E[P_\\infty \\mid y_{1:n}] \\neq P_n$", ORANGE),
     ]
     steps = np.arange(K + 1)
     x = N_OBS + steps

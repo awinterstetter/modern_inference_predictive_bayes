@@ -38,12 +38,14 @@
 // Predictive P_N (smooth) vs empirical distribution F_N of the completed data (steps), along
 // resampled paths of the Bayesian update (same model and data as martingale_posterior.html):
 //   P_N = N(thetaBar_N, 1 + 1/(N+1)),  F_N = empirical CDF of y_{1:n} and the imputed y_{n+1:N}.
-// Steps: N = 10, 50, 500, 5000 on path 1; then three paths at N = 5000 (different limits).
+// Steps: N = 10, 11, 50, 5000 on path 1; then three paths at N = 5000 (different limits);
+// then theta(F_inf) = mean of each limit; then theta(F_inf) over b = 1..10, 1..100, 1..1000 paths -> histogram = Pi_inf.
 // With ?steps the deck drives the step via postMessage({mpStep: k}); otherwise click / Next / arrows.
 (() => {
   const STEPS = /[?&#]steps\b/.test(location.search + location.hash);
   if (STEPS) document.documentElement.classList.add('steps');
-  const n = 10, NMAX = 5000, HORIZONS = [10, 50, 500, 5000], LAST = 4;
+  const n = 10, NMAX = 5000, HORIZONS = [10, 11, 50, 5000], BSTAGES = [10, 100, 1000], LAST = 8, B = 1000;
+  const ONE = HORIZONS.length - 1, THREE = ONE + 1, THETA = ONE + 2, HIST = ONE + 3;   // step indices
   function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
     t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   let rng = mulberry32(7);
@@ -64,6 +66,21 @@
   }
   const paths = [makePath(31542), makePath(39769), makePath(51217)];
   const COLS = ['--green', '--orange', '--blue'];
+  // theta(F) = mean of F; for the completed data F_N this is the sample mean of y_{1:N}
+  const thetaOf = p => p.ys.reduce((a, b) => a + b, 0) / p.ys.length;
+  const post = { m: S0 / (n + 1), s: Math.sqrt(1 / (n + 1)) };   // analytic posterior N(thetaBar_n, 1/(n+1))
+  // theta(F_N^{(b)}) for b = 1..B; b = 1, 2, 3 are the three highlighted paths. Computed on first use.
+  let draws = null, bShown = B;
+  function thetaDraws() {
+    if (draws) return draws;
+    draws = paths.map(thetaOf);
+    for (let b = 3; b < B; b++) {
+      rng = mulberry32(100003 + 7919 * b); let S = S0;
+      for (let i = n; i < NMAX; i++) S += S / (i + 1) + Math.sqrt(1 + 1 / (i + 1)) * randn();
+      draws.push(S / NMAX);
+    }
+    return draws;
+  }
 
   // normal CDF (Abramowitz-Stegun erf approximation)
   const erf = x => { const s = Math.sign(x); x = Math.abs(x); const t = 1 / (1 + 0.3275911 * x);
@@ -116,35 +133,140 @@
     // axes
     ctx.strokeStyle = fg; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(L.x0, L.y0 - 10); ctx.lineTo(L.x0, L.y1); ctx.lineTo(L.x1 + 12, L.y1); ctx.stroke();
     ctx.font = '16px Arial, Helvetica, sans-serif'; ctx.fillStyle = muted; ctx.textAlign = 'right';
-    for (const p of [0, 0.5, 1]) { ctx.fillText(String(p), L.x0 - 8, Y(p) + 5); ctx.strokeStyle = '#e3e4e6'; ctx.beginPath(); ctx.moveTo(L.x0, Y(p)); ctx.lineTo(L.x1, Y(p)); ctx.stroke(); }
+    for (const p of [0, 0.5, 1]) { if (step < HIST) ctx.fillText(String(p), L.x0 - 8, Y(p) + 5); ctx.strokeStyle = '#e3e4e6'; ctx.beginPath(); ctx.moveTo(L.x0, Y(p)); ctx.lineTo(L.x1, Y(p)); ctx.stroke(); }
     ctx.textAlign = 'center';
     for (const v of [0, 2, 4]) ctx.fillText(String(v), X(v), L.y1 + 22);
-    lab('xl', tex('y'), (L.x0 + L.x1) / 2, L.y1 + 28, -50, 0);
+    lab('xl', tex(step >= THETA ? 'y, \\; \\theta' : 'y'), (L.x0 + L.x1) / 2, L.y1 + 28, -50, 0);
 
-    const N = step <= 3 ? HORIZONS[step] : NMAX;
-    const show = step <= 3 ? [0] : [0, 1, 2];
+    const N = step <= ONE ? HORIZONS[step] : NMAX;
+    const show = step <= ONE ? [0] : [0, 1, 2];
     let legend = '', gaps = [];
+    ctx.globalAlpha = step >= HIST ? 0.25 : 1;
     show.forEach(k => {
       const p = paths[k], c = col(COLS[k]);
       const srt = ecdf(p, N), F = predCdf(p, N);
-      drawEcdf(srt, step <= 3 ? fg : c, step <= 3 ? 1.6 : 1.2);
+      drawEcdf(srt, step <= ONE ? fg : c, step <= ONE ? 1.6 : 1.2);
       drawCdf(F, c, 3);
       gaps.push(supGap(srt, F));
     });
-    lab('N', tex('N = ' + N), L.x1 - 10, L.y0 + 10, -100, 0, 'big');
-    if (step <= 3) legend = `<span class="sw" style="border-color:${col('--green')}"></span>predictive ${tex('P_N')} (next point)<br>` +
-      `<span class="sw step" style="border-color:${fg}"></span>empirical ${tex('F_N')} (completed data)`;
-    else legend = `three resampled paths:<br>each pair ${tex('P_N \\approx F_N')},<br>but every path has<br>its own limit ${tex('P_\\infty')}`;
+    ctx.globalAlpha = 1;
+
+    // single-path steps: rug of the data (observed dark, imputed orange, fading as N grows)
+    if (step <= ONE) {
+      const p = paths[0];
+      if (N > n + 2) {
+        ctx.strokeStyle = '#A9A7A0'; ctx.lineWidth = 1; ctx.globalAlpha = Math.max(0.08, Math.min(0.9, 25 / (N - n)));
+        for (let i = n; i < N; i++) { ctx.beginPath(); ctx.moveTo(X(p.ys[i]), L.y1); ctx.lineTo(X(p.ys[i]), L.y1 - 9); ctx.stroke(); }
+        ctx.globalAlpha = 1;
+      }
+      ctx.strokeStyle = fg; ctx.lineWidth = 2;
+      for (let i = 0; i < n; i++) { ctx.beginPath(); ctx.moveTo(X(p.ys[i]), L.y1); ctx.lineTo(X(p.ys[i]), L.y1 - 14); ctx.stroke(); }
+    }
+    // first two sampled points: highlighted in orange, previous predictive dashed
+    const early = step <= ONE && N <= n + 2;
+    if (early) {
+      const p = paths[0], orange = '#A9A7A0';   // light grey, same as the imputed-data ticks
+      if (N > n) {
+        ctx.globalAlpha = 0.55; ctx.setLineDash([6, 5]);
+        drawCdf(predCdf(p, N - 1), col('--green'), 2);
+        ctx.setLineDash([]); ctx.globalAlpha = 1;
+      }
+      for (let i = n; i < N; i++) {
+        const v = p.ys[i], last = i === N - 1;
+        ctx.fillStyle = orange; ctx.beginPath(); ctx.arc(X(v), L.y1, last ? 7 : 5, 0, 2 * Math.PI); ctx.fill();
+        if (last) {
+          ctx.strokeStyle = orange; ctx.lineWidth = 1.4; ctx.setLineDash([3, 4]);
+          ctx.beginPath(); ctx.moveTo(X(v), L.y1); ctx.lineTo(X(v), Y(1)); ctx.stroke(); ctx.setLineDash([]);
+          lab('new', `<span style="color:${orange}">${tex('Y_{' + N + '}')}</span>`, X(v) + 8, Y(0.12), 0, -50);
+        }
+      }
+    }
+
+    // theta(F_inf) = mean of each limit, dropped onto the y axis
+    const ths = paths.map(thetaOf);
+    if (step >= THETA) show.forEach(k => {
+      const c = col(COLS[k]), t = ths[k], yTop = step >= HIST ? L.y1 : Y(predCdf(paths[k], N)(t));
+      ctx.strokeStyle = c; ctx.lineWidth = 1.6; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(X(t), yTop); ctx.lineTo(X(t), L.y1); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(X(t), L.y1, 5.5, 0, 2 * Math.PI); ctx.fill();
+      if (step === THETA) { ctx.beginPath(); ctx.arc(X(t), yTop, 4, 0, 2 * Math.PI); ctx.fill(); }
+    });
+
+    // histogram of theta(F_inf) over B paths = martingale posterior
+    let dstats = null;
+    if (step >= HIST) {
+      const d = thetaDraws().slice(0, bShown), nd = d.length;
+      // every limit F_inf^{(b)} for b <= bShown (approx. N(theta_b, 1) at N = 5000), faint grey
+      ctx.strokeStyle = muted; ctx.lineWidth = 1; ctx.globalAlpha = Math.max(0.02, Math.min(0.5, 6 / nd));
+      for (let b = 3; b < nd; b++) {
+        ctx.beginPath();
+        for (let g = 0; g <= 60; g++) { const v = XLO + (XHI - XLO) * g / 60, yy = Y(Phi(v, d[b], 1)); g ? ctx.lineTo(X(v), yy) : ctx.moveTo(X(v), yy); }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+      const lo = post.m - 4 * post.s, w = post.s / 4, nb = 32, cnt = new Array(nb).fill(0);
+      d.forEach(v => { const j = Math.floor((v - lo) / w); if (j >= 0 && j < nb) cnt[j]++; });
+      const hs = 0.42 * post.s * Math.sqrt(2 * Math.PI);   // analytic peak -> 0.42 of the panel height (stays below the 0.5 line)
+      const green = col('--green');
+      ctx.beginPath(); ctx.moveTo(X(lo), Y(0));
+      cnt.forEach((c, j) => { const h = Y(hs * c / (B * w)); ctx.lineTo(X(lo + j * w), h); ctx.lineTo(X(lo + (j + 1) * w), h); });
+      ctx.lineTo(X(lo + nb * w), Y(0)); ctx.closePath();
+      ctx.fillStyle = 'rgba(0, 136, 58, 0.16)'; ctx.fill(); ctx.strokeStyle = green; ctx.lineWidth = 1.6; ctx.stroke();
+      ctx.strokeStyle = muted; ctx.lineWidth = 1.4; ctx.setLineDash([6, 5]); ctx.beginPath();
+      for (let g = 0; g <= 200; g++) { const v = post.m - 4.5 * post.s + 9 * post.s * g / 200, z = (v - post.m) / post.s;
+        const h = Y(hs * Math.exp(-z * z / 2) / (post.s * Math.sqrt(2 * Math.PI))); g ? ctx.lineTo(X(v), h) : ctx.moveTo(X(v), h); }
+      ctx.stroke(); ctx.setLineDash([]);
+      const mean = d.reduce((a, b) => a + b, 0) / nd, sd = Math.sqrt(d.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, nd - 1));
+      dstats = { mean, sd, nd };
+    }
+
+    // highlight the 0.5 level: each limit crosses it at its centre theta(F_inf) (mean = median for these limits)
+    if (step >= THETA) {
+      ctx.strokeStyle = fg; ctx.lineWidth = 1.4; ctx.globalAlpha = 0.75; ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(L.x0, Y(0.5)); ctx.lineTo(L.x1, Y(0.5)); ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+      ctx.font = 'bold 17px Arial, Helvetica, sans-serif'; ctx.fillStyle = fg; ctx.textAlign = 'right';
+      ctx.fillText('0.5', L.x0 - 8, Y(0.5) + 6);
+      if (step >= HIST) {
+        const d = thetaDraws().slice(0, bShown);
+        ctx.fillStyle = muted; ctx.globalAlpha = Math.max(0.08, Math.min(0.8, 8 / d.length));
+        if (d.length <= 100) for (let b = 3; b < d.length; b++) { ctx.beginPath(); ctx.arc(X(d[b]), Y(0.5), 3, 0, 2 * Math.PI); ctx.fill(); }
+        ctx.globalAlpha = 1;
+        if (d.length < B) paths.forEach((p, k) => { ctx.fillStyle = col(COLS[k]); ctx.beginPath(); ctx.arc(X(d[k]), Y(0.5), 4, 0, 2 * Math.PI); ctx.fill(); });
+      }
+    }
+
+    lab('N', tex('N = ' + N), L.x1 + 30, L.y0, 0, 0, 'big');
+    if (step >= THREE) lab('b', tex(step >= HIST ? 'b = 1, \\dots, ' + bShown : 'b = 1, 2, 3'), L.x1 + 30, L.y0 + 42, 0, 0, 'big');
+    if (step <= ONE) legend = `<span class="sw" style="border-color:${col('--green')}"></span>predictive ${tex('P_N')} (next point)<br>` +
+      `<span class="sw step" style="border-color:${fg}"></span>empirical ${tex('F_N')} (completed data)` +
+      `<br><br><span style="display:inline-block; width:26px; margin-right:8px; text-align:center; font-weight:700">|</span>observed ${tex('y_{1:n}')}` +
+      (!early ? `<br><span style="display:inline-block; width:26px; margin-right:8px; text-align:center; color:#A9A7A0">|</span>imputed ${tex('Y_{n+1:N}')}` : '') +
+      (early && N > n ? `<br><span style="display:inline-block; width:26px; margin-right:8px; text-align:center; color:#A9A7A0">●</span>sampled ${tex('Y_{' + N + '} \\sim P_{' + (N - 1) + '}')}` +
+        `<br><span class="sw" style="border-color:${col('--green')}; border-top-style:dashed; opacity:0.55"></span>previous ${tex('P_{' + (N - 1) + '}')}` : '');
+    else if (step === THREE) legend = `three resampled paths:<br>each pair ${tex('P_N \\approx F_N')},<br>but every path has<br>its own limit ${tex('F_\\infty = P_\\infty')}`;
+    else if (step === THETA) legend = `apply ${tex('\\theta')} = mean<br>to each limit:<br>` +
+      show.map(k => `<span style="color:${col(COLS[k])}">${tex('\\theta(F_\\infty^{(' + (k + 1) + ')})')} = ${ths[k].toFixed(2)}</span>`).join('<br>');
+    else legend = `each path ${tex('b')} gives one draw<br>${tex('\\theta(F_\\infty^{(b)}) \\sim \\Pi_\\infty(\\cdot \\mid y_{1:n})')}<br><br>` +
+      `<span class="sw" style="border-color:${muted}; opacity:0.5"></span>limits ${tex('F_\\infty^{(b)}')}<br>` +
+      `<span class="sw" style="border-color:${col('--green')}"></span>histogram, ${tex('B = ' + B)}<br>` +
+      `<span class="sw" style="border-color:${muted}; border-top-style:dashed"></span>${tex('\\pi(\\theta \\mid y_{1:n})')}`;
     lab('leg', legend, L.x1 + 30, (L.y0 + L.y1) / 2, 0, -50);
-    stats.innerHTML = 'largest gap ' + tex('\\sup_y |F_N(y) - P_N(y)|') + ' = ' + gaps.map(g => g.toFixed(3)).join(', ');
+    if (step <= THREE) stats.innerHTML = 'largest gap ' + tex('\\sup_y |F_N(y) - P_N(y)|') + ' = ' + gaps.map(g => g.toFixed(3)).join(', ');
+    else if (step === THETA) stats.innerHTML = tex('\\theta(F) = \\int y \\, dF(y)') + ': one value per path';
+    else stats.innerHTML = `${dstats.nd} draws: mean ${dstats.mean.toFixed(3)}, sd ${dstats.sd.toFixed(3)}  (analytic posterior: ${post.m.toFixed(3)}, ${post.s.toFixed(3)})`;
     backBtn.disabled = step <= 0; nextBtn.disabled = step >= LAST;
   }
-  const go = k => { step = Math.max(0, Math.min(LAST, k)); draw(); };
+  const go = k => {
+    step = Math.max(0, Math.min(LAST, k));
+    bShown = step >= HIST ? BSTAGES[step - HIST] : B;
+    draw();
+  };
   if (STEPS) window.addEventListener('message', e => { const k = e.data && e.data.mpStep; if (Number.isInteger(k)) go(k); });
   else {
     cv.addEventListener('click', () => go(step + 1)); nextBtn.addEventListener('click', () => go(step + 1)); backBtn.addEventListener('click', () => go(step - 1));
     document.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); go(step + 1); } else if (e.key === 'ArrowLeft') { e.preventDefault(); go(step - 1); } });
-    const m = /[?&]step=(\d)/.exec(location.search); if (m) step = +m[1];
+    const m = /[?&]step=(\d)/.exec(location.search); if (m) { step = +m[1]; bShown = step >= HIST ? BSTAGES[step - HIST] : B; }
   }
   window.addEventListener('resize', layout);
   if (window.ResizeObserver) new ResizeObserver(() => layout()).observe(cv);
