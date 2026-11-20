@@ -8,8 +8,10 @@ n = 10, thetaBar_n = 1.84. Every panel uses the same standard normal draws.
                              Y_k ~ N(thetaBar_{k-1}, 1 + 1/k)        -> converges, centred
   (b) Existence violated:    fixed learning rate a = 0.03 and fixed predictive variance
                              -> random walk, paths never settle (no P_inf)
-  (c) Unbiasedness violated: Bayesian update, but Y_k ~ N(thetaBar_{k-1} + delta, ...)
-                             -> paths settle, but the cloud drifts away from thetaBar_n
+  (c) Unbiasedness violated: Bayesian update, but Y_k ~ N(thetaBar_{k-1} + delta_k, ...)
+                             with a fading shift delta_k = C_SHIFT / sqrt(k): the total expected
+                             drift sum_k delta_k / (k+1) is finite, so the paths still settle
+                             (Condition 1 holds), but the cloud ends away from thetaBar_n
 
     python3 make_conditions_figure.py   ->  conditions.svg
 """
@@ -30,7 +32,7 @@ TEXT = "#2F2F2F"
 N_OBS, K, B = 10, 1000, 150
 THETA_N = 1.84
 S2_N = 1 + 1 / (N_OBS + 1)
-DELTA = 0.1
+C_SHIFT = 0.7
 
 
 def simulate(z, kind):
@@ -44,7 +46,7 @@ def simulate(z, kind):
             th = th + 0.03 * (y - th)
         else:
             s2 = 1 + 1 / k                   # posterior predictive variance before the update
-            shift = DELTA if kind == "unbiased" else 0.0
+            shift = C_SHIFT / np.sqrt(k) if kind == "unbiased" else 0.0
             y = th + shift + np.sqrt(s2) * z[:, j]
             th = th + (y - th) / (k + 1)
         paths[:, j + 1] = th

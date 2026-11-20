@@ -1,0 +1,119 @@
+<!-- "Questions DR" notes button + panel.
+     Button: sits above the LMU logo on every slide (inside the scaled slide layer).
+     Panel:  free-text notes, auto-saved in this browser (localStorage), downloadable as .md.
+     Hide everything for the actual talk: open the deck with ?clean  (e.g. slides.html?clean). -->
+<style>
+  #qdr-btn {
+    position: absolute; top: 14px; left: 60px; z-index: 30;
+    pointer-events: auto;   /* reveal.js sets pointer-events: none on .slides */
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 14px; border-radius: 999px;
+    border: 1.5px solid #00883A; background: #fff; color: #00883A;
+    font: 700 16px/1.2 Arial, Helvetica, sans-serif; cursor: pointer;
+  }
+  #qdr-btn:hover { background: #00883A; color: #fff; }
+  #qdr-btn svg { width: 16px; height: 16px; }
+  :root { --qdr-w: clamp(340px, 30vw, 520px); }
+  /* when the scratchboard is open, the whole presentation view is scaled down as one picture
+     (anchored left), so nothing inside it moves relative to anything else */
+  html.qdr-open .reveal { transform: scale(var(--qdr-s, 0.7)); transform-origin: 0 50%; }
+  #qdr-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: var(--qdr-w); box-sizing: border-box; z-index: 1000;
+    display: none; flex-direction: column; gap: 10px; padding: 18px;
+    background: #fff; border-left: 4px solid #00883A; box-shadow: -8px 0 24px rgba(0,0,0,0.15);
+    font: 16px/1.4 Arial, Helvetica, sans-serif; color: #2F2F2F;
+  }
+  #qdr-panel.open { display: flex; }
+  #qdr-panel header { display: flex; align-items: center; justify-content: space-between; }
+  #qdr-panel h2 { margin: 0; font-size: 20px; color: #00883A; }
+  #qdr-panel textarea {
+    flex: 1; width: 100%; box-sizing: border-box; resize: none; padding: 10px; border: 1px solid #ccc; border-radius: 6px;
+    font: 15px/1.5 Menlo, Monaco, Consolas, monospace; color: #2F2F2F;
+  }
+  #qdr-panel .row { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+  #qdr-panel button { font: inherit; padding: 5px 12px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+  #qdr-panel button:hover { border-color: #00883A; }
+  #qdr-status { color: #626468; font-size: 13px; }
+  #qdr-slide { color: #626468; font-size: 14px; font-weight: 700; }
+  html.print-pdf #qdr-btn, html.qdr-clean #qdr-btn { display: none !important; }
+</style>
+<div id="qdr-panel" role="dialog" aria-label="Questions DR">
+  <header><h2>Questions DR</h2><button id="qdr-close" title="Close (Esc)">✕</button></header>
+  <div id="qdr-slide"></div>
+  <textarea id="qdr-text" placeholder="Notes and questions for this slide…"></textarea>
+  <div class="row"><span id="qdr-status"></span><button id="qdr-dl">Download all .md</button></div>
+</div>
+<script>
+// Notes are stored per slide: one JSON object { slideKey: text } in localStorage.
+// slideKey = the slide's id (from its title) if it has one, else its position "h.v".
+(() => {
+  if (/[?&]clean\b/.test(location.search)) document.documentElement.classList.add('qdr-clean');
+  const KEY = 'qdr-notes-v2:' + location.pathname;
+  const OLD_KEY = 'qdr-notes:' + location.pathname;          // earlier single-pad version
+  const panel = document.getElementById('qdr-panel'), ta = document.getElementById('qdr-text');
+  const status = document.getElementById('qdr-status'), label = document.getElementById('qdr-slide');
+  let notes = {}, titles = {}, cur = null;
+  try { const raw = JSON.parse(localStorage.getItem(KEY) || '{}'); notes = raw.notes || {}; titles = raw.titles || {}; } catch (_) {}
+  try { const old = localStorage.getItem(OLD_KEY); if (old && !notes['_general']) { notes['_general'] = old; titles['_general'] = 'General (earlier notes)'; } } catch (_) {}
+
+  const slideInfo = () => {
+    if (!window.Reveal) return { key: '_general', title: 'General' };
+    const s = Reveal.getCurrentSlide(), i = Reveal.getIndices();
+    const key = (s && s.id) ? s.id : ('slide-' + i.h + '.' + (i.v || 0));
+    const h = s && s.querySelector('h1, h2');
+    const asked = s && s.querySelector('.asked, p');
+    const title = (h && h.textContent.trim()) || (asked && asked.textContent.trim().slice(0, 80)) || ('Slide ' + (i.h + 1));
+    return { key, title, num: Reveal.getSlidePastCount ? Reveal.getSlidePastCount() + 1 : i.h + 1 };
+  };
+  const persist = () => {
+    try { localStorage.setItem(KEY, JSON.stringify({ notes, titles })); status.textContent = 'Saved in this browser · ' + new Date().toLocaleTimeString(); }
+    catch (_) { status.textContent = 'Could not save here (storage blocked) – use Download'; }
+  };
+  const store = () => { if (cur) { if (ta.value) notes[cur] = ta.value; else delete notes[cur]; } persist(); };
+  const show = () => {
+    const info = slideInfo();
+    cur = info.key; titles[cur] = info.title;
+    label.textContent = 'Slide ' + info.num + ': ' + info.title;
+    ta.value = notes[cur] || '';
+  };
+  let t; ta.addEventListener('input', () => { clearTimeout(t); t = setTimeout(store, 400); });
+  ['keydown', 'keyup', 'keypress'].forEach(ev => ta.addEventListener(ev, e => e.stopPropagation()));
+
+  const setScale = () => {
+    const w = panel.getBoundingClientRect().width || 0;
+    document.documentElement.style.setProperty('--qdr-s', Math.max(0.3, (window.innerWidth - w) / window.innerWidth).toFixed(4));
+  };
+  window.addEventListener('resize', () => { if (panel.classList.contains('open')) setScale(); });
+  const open = () => { show(); panel.classList.add('open'); setScale(); document.documentElement.classList.add('qdr-open'); ta.focus(); };
+  const close = () => { clearTimeout(t); store(); panel.classList.remove('open'); document.documentElement.classList.remove('qdr-open'); ta.blur(); };
+  document.getElementById('qdr-close').addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && panel.classList.contains('open')) { e.stopPropagation(); close(); } }, true);
+
+  // export all notes in deck order, one heading per slide
+  document.getElementById('qdr-dl').addEventListener('click', () => {
+    clearTimeout(t); store();
+    const order = [];
+    if (window.Reveal) Reveal.getSlides().forEach((s, k) => { const key = s.id || null; if (key) order.push(key); });
+    const keys = Object.keys(notes).sort((a, b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      return (ia < 0 ? 1e9 : ia) - (ib < 0 ? 1e9 : ib);
+    });
+    const md = '# Questions DR\n\n' + keys.map(k => '## ' + (titles[k] || k) + '\n\n' + notes[k].trim() + '\n').join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([md], { type: 'text/markdown' }));
+    a.download = 'questions-DR.md'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  window.addEventListener('load', () => {
+    // follow the deck: save the old slide's notes, show the new slide's notes
+    if (window.Reveal) Reveal.on('slidechanged', () => { clearTimeout(t); store(); if (panel.classList.contains('open')) show(); });
+    // button inside the scaled slide layer, so it stays exactly above the logo
+    const host = document.querySelector('.reveal .slides');
+    if (!host) return;
+    const b = document.createElement('button');
+    b.id = 'qdr-btn'; b.type = 'button'; b.title = 'Questions DR – notes for this slide';
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Questions DR';
+    b.addEventListener('click', e => { e.stopPropagation(); panel.classList.contains('open') ? close() : open(); });
+    host.appendChild(b);
+  });
+})();
+</script>
