@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1520 560" font-family="Arial, Helvetica, sans-serif">
+  <!-- Simplified version of venn.svg for the main deck: exchangeable ⊂ c.i.d. (no i.i.d., no grey annotations) -->
+  <!-- c.i.d. (outer) -->
+  <ellipse cx="760" cy="280" rx="720" ry="260" fill="#D9822B" fill-opacity="0.10" stroke="#D9822B" stroke-width="3"/>
+  <!-- exchangeable (inner) -->
+  <ellipse cx="520" cy="290" rx="410" ry="205" fill="#00883A" fill-opacity="0.12" stroke="#00883A" stroke-width="3"/>
+
+  <text x="1210" y="268" fill="#D9822B" font-size="44" font-weight="700" text-anchor="middle">c.i.d. observations</text>
+  <text x="1210" y="322" fill="#2F2F2F" font-size="36" text-anchor="middle">predictive Bayes</text>
+  <text x="1210" y="366" fill="#2F2F2F" font-size="30" text-anchor="middle">(martingale posteriors)</text>
+
+  <text x="520" y="278" fill="#00883A" font-size="44" font-weight="700" text-anchor="middle">exchangeable observations</text>
+  <text x="520" y="332" fill="#2F2F2F" font-size="36" text-anchor="middle">traditional Bayes</text>
+</svg>
