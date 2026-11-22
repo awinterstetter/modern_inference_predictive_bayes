@@ -236,7 +236,7 @@
       }
     }
 
-    lab('N', tex('N = ' + N), L.x1 + 30, L.y0, 0, 0, 'big');
+    lab('N', tex(N === n ? 'N = n = ' + N : N === n + 1 ? 'N = n + 1 = ' + N : 'N = ' + N), L.x1 + 30, L.y0, 0, 0, 'big');
     if (step >= THREE) lab('b', tex(step >= HIST ? 'b = 1, \\dots, ' + bShown : 'b = 1, 2, 3'), L.x1 + 30, L.y0 + 42, 0, 0, 'big');
     if (step <= ONE) legend = `<span class="sw" style="border-color:${col('--green')}"></span>predictive ${tex('P_N')} (next point)<br>` +
       `<span class="sw step" style="border-color:${fg}"></span>empirical ${tex('F_N')} (completed data)` +

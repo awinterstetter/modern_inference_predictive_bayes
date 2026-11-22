@@ -18,7 +18,6 @@ format:
     slide-number: c/t
     html-math-method: katex
     footer: "[Alexander Winterstetter]{} [Predictive Bayesian Inference]{} [{{< meta date >}}]{}"
-    include-after-body: notes-panel.html   # "Questions DR" notes button (hide with slides.html?clean)
 ---
 
 ## The traditional Bayesian recipe
@@ -303,7 +302,7 @@ $$
 $$
 :::
 
-[Predictive resampling arrives at the traditional Bayesian posterior $\pi(\theta \mid y_{1:n})$ when the predicted observations are exchangeable]{.then}
+[Predictive resampling coincides with the traditional Bayesian posterior $\pi(\theta \mid y_{1:n})$ when the predicted observations are exchangeable]{.then}
 
 ## {.answer}
 
@@ -322,24 +321,19 @@ Can predictive Bayesian inference generalize from traditional Bayesian inference
 ## Requirements for a valid posterior
 [What must hold for predictive coherence]{.subtitle}
 
-::: {style="padding-top: 1.2em"}
-:::
-
-- Instead of prior $\times$ likelihood, 1-step ahead predictive distributions are specified to predict the missing data
+- Now we specify 1-step-ahead predictive distributions without an implicit prior $\times$ likelihood representation
 
   $$
-  P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}), \qquad i = n, n+1, \dots
+  P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}) \qquad i = n, n+1, \dots
   $$
 
-[The posterior is inferred from an ensemble of "complete" datasets]{.then}
+[Predictive resampling still produces a distribution for $\theta$, but now its validity is no longer guaranteed by Bayes' theorem]{.then}
 
-::: {style="padding-top: 0.8em"}
-**Predictive coherence** defines two conditions for the sequence of predictive distributions $P_i(y)$ so that predictive resampling yields a valid posterior \[1\]:
-:::
+- **Predictive coherence** \[1\]: when the sequence of predictives $P_i(y)$ fulfils these two conditions, predictive resampling yields a valid posterior
 
-:::: {.columns style="padding-top: 0.4em"}
+:::: {.columns style="margin-top: 0.6em"}
 ::: {.column width="49%"}
-::: box
+::: {.box style="height: 100%; box-sizing: border-box; margin: 0"}
 [**Condition 1 (Existence)**]{style="color: #2F2F2F"}
 
 $P_{n+1}(y), P_{n+2}(y), \dots$ converges almost surely to a random distribution function $P_\infty(y)$
@@ -348,7 +342,7 @@ $P_{n+1}(y), P_{n+2}(y), \dots$ converges almost surely to a random distribution
 ::: {.column width="2%"}
 :::
 ::: {.column width="49%"}
-::: box
+::: {.box style="height: 100%; box-sizing: border-box; margin: 0"}
 [**Condition 2 (Unbiasedness)**]{style="color: #2F2F2F"}
 
 $E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
@@ -356,20 +350,53 @@ $E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
 :::
 ::::
 
-
-
 ## What the two conditions rule out
 [Same model and random draws; coloured line = average over paths, dashed = $\bar\theta_n$]{.subtitle}
 
 ![](resources/conditions.svg){.nostretch width=100% fig-align="center"}
 
-## Settings in which predictive coherence holds
-[Traditional Bayes implies exchangeable observations, predictive Bayes only requires c.i.d. observations]{.subtitle}
+[What does the valid case look like from the perspective of the predictive distribution?]{.then}
 
-:::: {.columns style="padding-top: 1.2em"}
+## From the predictive to the martingale posterior
+[Each path converges to its own distribution $F_\infty$; applying $\theta$ to each gives a draw from the posterior]{.subtitle}
+
+<iframe class="embed mp-steps" src="resources/pf_limit.html?steps&v=15"></iframe>
+
+::: {style="display: none"}
+[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}
+:::
+
+## Martingale posterior
+[The martingale posterior is induced by the distribution of the random distribution function $F_\infty$ given the observed data]{.subtitle}
+
+::: {.box style="margin-top: 1.5em"}
+[**Definition (martingale posterior)** \[1\]]{style="color: #2F2F2F"}
+
+$$
+\Pi_\infty(\theta_\infty \le t \mid y_{1:n}) = \int \mathbb{1}\{\theta(F_\infty) \le t\}\; d\Pi(F_\infty \mid y_{1:n})
+$$
+:::
+
+::: {.sub-bullets style="padding-left: 1.5em"}
+- $F_\infty$: empirical distribution of the completed dataset $\{y_{1:n}, Y_{n+1:\infty}\}$ with simulated $Y_{n+1:\infty}$
+- $\Pi(F_\infty \mid y_{1:n})$: distribution of $F_\infty$ given the observed data, implied by the predictives
+:::
+
+- In practice we stop at a finite horizon $N$:
+
+$$
+\Pi_N(\theta_N \le t \mid y_{1:n}) = \int \mathbb{1}\{\theta(F_N) \le t\}\; p(y_{n+1:N} \mid y_{1:n})\, dy_{n+1:N}
+$$
+
+[Which predictive sequences $P_n, P_{n+1}, \dots$ achieve predictive coherence?]{.then}
+
+## Martingale property
+[The key criterion for the choice of the predictive rule is the martingale property \[7\]]{.subtitle}
+
+:::: {.columns style="padding-top: 0.4em"}
 ::: {.column width="46%"}
 ::: box
-[**c.i.d. sequence** \[5\]]{style="color: #2F2F2F"}
+[**c.i.d. sequence of observations** \[5\]]{style="color: #2F2F2F"}
 
 $P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
 
@@ -381,7 +408,7 @@ $\Leftrightarrow$
 :::
 ::: {.column width="46%"}
 ::: box
-[**Martingale property**]{style="color: #2F2F2F"}
+[**Predictives form a martingale**]{style="color: #2F2F2F"}
 
 $E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
 
@@ -390,44 +417,40 @@ $E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
 :::
 ::::
 
-- Exchangeable observations $\subset$ c.i.d. observations: c.i.d. drops the invariance under reordering, which admits update rules beyond prior $\times$ likelihood
-
-[Predictive sequences fulfilling the martingale property achieve predictive coherence and yield the **martingale posterior** \[1, 5\]]{.then}
-
-## From the predictive to the martingale posterior
-[Each path converges to its own distribution $F_\infty$; applying $\theta$ to each gives a draw from the posterior]{.subtitle}
-
-<iframe class="embed mp-steps" src="resources/pf_limit.html?steps&v=12"></iframe>
-
-::: {style="display: none"}
-[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}
+:::: {.columns style="margin-top: -0.6em"}
+::: {.column style="width: 50%; box-sizing: border-box"}
+&nbsp;
 :::
-
-## Martingale posterior
-[The martingale posterior yields valid parameter posteriors without relying on a prior or likelihood]{.subtitle}
-
-::: {.box style="margin-top: 1.5em"}
-[**Definition (martingale posterior)** \[1\]]{style="color: #2F2F2F"}
-
-$$
-\Pi_\infty(\theta_\infty \le t \mid y_{1:n}) = \int \mathbb{1}\{\theta(F_\infty) \le t\}\; d\Pi(F_\infty \mid y_{1:n})
-$$
+::: {.column style="width: 50%; box-sizing: border-box; padding-left: 4%"}
+::: {style="text-align: center; font-size: 1.8em; line-height: 1; margin: 0.1em 0"}
+$\Downarrow$
 :::
+::: box
+[**Predictive coherence**]{style="color: #2F2F2F"}
 
-- $F_\infty$: empirical distribution of the completed dataset $y_{1:n}, Y_{n+1:\infty}$, random because $Y_{n+1:\infty}$ is missing
-- $\Pi(F_\infty \mid y_{1:n})$: distribution of $F_\infty$ given the observed data, implied by the predictives
-- In practice we stop at a finite horizon $N$:
+$P_\infty$ exists and $E[P_\infty \mid y_{1:n}] = P_n$
 
-$$
-\Pi_N(\theta_N \le t \mid y_{1:n}) = \int \mathbb{1}\{\theta(F_N) \le t\}\; p(y_{n+1:N} \mid y_{1:n})\, dy_{n+1:N}
-$$
+$\Rightarrow$ resulting martingale posterior is a valid posterior \[1, 5\]
+:::
+:::
+::::
 
-[Predictive resampling returns samples from $\Pi_N$, which approaches $\Pi_\infty$ as $N \to \infty$ under predictive coherence]{.then}
+## Implications for generalization capabilities
+[Traditional Bayes implies exchangeable observations, predictive Bayes only requires c.i.d. observations]{.subtitle}
+
+- Predictive Bayes imposes a weaker condition on the predicted observations for obtaining valid posteriors
+- c.i.d. observations don't need to be exchangeable as in traditional Bayes
+
+![](resources/venn_main.svg){.nostretch width=62% fig-align="center"}
+
+[Given that the predictive rule keeps the martingale property, valid posteriors can be acquired without an implicit prior $\times$ likelihood representation]{.then}
 
 ## {.answer}
 
 ::: qa
 [Can predictive Bayesian inference generalize from traditional Bayesian inference?]{.asked}
+
+[Valid posteriors can be acquired as long as the framework is predictively coherent]{.then}
 
 [Update rules whose predictives form a martingale yield valid posteriors without a prior $\times$ likelihood setup]{.then}
 :::
@@ -436,28 +459,39 @@ $$
 
 Practical applications of predictive Bayesian inference
 
+## Practical Implications of Predictive Bayes
+
+**Advantages**
+
+- Misspecification of prior $\times$ likelihood can be avoided
+- Probabilities are only assigned to observable quantities instead of latent parameters
+- Updating the predictive rule with each new observation directly mirrors Bayesian learning, without assuming exchangeability
+- Bayesian inference can be performed with only the posterior predictive distribution known
+
+[Formulate a coherent predictive rule and test it on the observed data]{.then}
+
+**Caveats**
+
+- Specifying a sensible predictive rule is often challenging
+- Prior assumptions are still encoded in the initial guess $p_0$ and the choice of update rule $\{p_i, y_{i+1}\} \mapsto p_{i+1}$
+
 ## Brainstorming
+[Options for the practical example]{.subtitle}
 
-- Predictive Bayesian inference utilized in the traditional Bayesian framework
-
-[Variational predictive resampling \[3\]]{.then}
-
-- Utilization of the martingale posterior
-
-[Copula update \[1\]]{.then}
-
-- Nonparametric posterior without prior or likelihood
-
-[Pólya urn $\Rightarrow$ Bayesian bootstrap \[1, 6\]]{.then}
-
-- Parametric posterior without a prior
-
-[Parametric martingale posterior with score-based updates \[7, 8\]]{.then}
+::: {style="font-size: 0.78em; margin-top: 0.4em"}
+|  | **Example** | **Pros** | **Cons** |
+|--|-------|--------|--------|
+| **1** | Bootstrapping / Pólya urn \[1, 6\] | <span class="pm">+ computationally easy</span><span class="pm">+ close to the papers (many of them name it)</span> | <span class="pm">– personally not that interesting</span><span class="pm">– rest of the presentation is already close to the papers</span> |
+| **2** | Copula update as in \[1\], Sections 4.1–4.2 | <span class="pm">+ relevant method for martingale posterior approximation</span><span class="pm">+ focused</span> | <span class="pm">– again close to the Fong et al. paper</span><span class="pm">– in the end shows what was shown before: posteriors can be obtained more cheaply</span><span class="pm">– hyperparameters (e.g. copula bandwidth $\rho$) need to be discussed to some extent</span> |
+| **3** | Copula update for uncertainty quantification of PFNs \[9\] | <span class="pm">+ very interesting</span><span class="pm">+ shows how it is used in an applied domain</span> | <span class="pm">– maybe too convoluted at the end of the talk</span><span class="pm">– students probably don't know PFNs (does someone present topic 7?)</span><span class="pm">– hyperparameters (e.g. copula bandwidth $\rho$) need to be discussed to some extent</span> |
+| **4** | Parametric martingale posterior with score-based updates \[7, 8\] | <span class="pm">+ unrelated to the Fong et al. (2023) paper</span> | <span class="pm">– score-based machinery needs to be introduced</span> |
+| **5** | Variational predictive resampling \[3\] | <span class="pm">+ interesting approach and more practical application (improves variational inference)</span> | <span class="pm">– relies on a.c.i.d. assumptions</span><span class="pm">– variational inference itself needs to be introduced, takes long</span> |
+:::
 
 ## Notes & Questions
 
 - Is the theory part too dense?
-- Does reusing one running example (slides 9, 13, 20) feel repetitive?
+- Does reusing one running example (slides 9, 13, 19) feel repetitive?
 - Should parametric update rules (score-based martingale posteriors \[7, 8\]) be covered as well?
 - Should the generalization from exchangeable to c.i.d. sequences get more emphasis?
 
@@ -497,7 +531,7 @@ $$
 $$
 :::
 
-- $F_\infty$: empirical distribution of the completed dataset $y_{1:n}, Y_{n+1:\infty}$
+- $F_\infty$: empirical distribution of the completed dataset $\{y_{1:n}, Y_{n+1:\infty}\}$
 - Under c.i.d., $F_\infty = P_\infty$ almost surely, so $\theta(F_\infty) = \theta(P_\infty)$ \[1, 5\]
 
 
@@ -519,4 +553,6 @@ $$
 \[7\] Holmes, C. C. & Walker, S. G. (2023). Statistical inference with exchangeability and martingales. *Philosophical Transactions of the Royal Society A*, 381(2247), 20220143.
 
 \[8\] Fong, E. & Yiu, A. (2026). Asymptotics for a class of parametric martingale posteriors. *Biometrika*. arXiv:2410.17692.
+
+\[9\] Nagler, T. & Rügamer, D. Uncertainty quantification for prior-data fitted networks using martingale posteriors. *arXiv:2505.11325*.
 :::
