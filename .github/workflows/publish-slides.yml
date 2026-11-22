@@ -36,7 +36,7 @@ jobs:
           version: 1.11.9   # same version as used locally
 
       - name: Render slides
-        run: quarto render presentation/slides.qmd
+        run: quarto render presentation/slides.qmd -M hide-appendix:true
 
       - name: Assemble site
         run: |
