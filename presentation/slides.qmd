@@ -292,7 +292,7 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 
 - **Exchangeability:** $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$
 - **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood representation
-- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, \dots, Y_N$ is exchangeable
+- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, Y_{n+2}, \dots$ is exchangeable
 
 ::: {.box style="padding: 0.4em 1em 0.7em; margin-top: 0.8em"}
 $$
