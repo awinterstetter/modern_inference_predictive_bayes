@@ -291,15 +291,15 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 [De Finetti's representation theorem links traditional Bayesian inference to a predictive framework]{.subtitle}
 
 - **Exchangeability:** $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$
-- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, \dots, Y_N$ is exchangeable
 - **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood representation
+- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, \dots, Y_N$ is exchangeable
 
 ::: {.box style="padding: 0.4em 1em 0.7em; margin-top: 0.8em"}
 $$
-\overset{\textbf{Predictive Bayes view}}{\underbrace{\prod_{i=1}^{n} p(y_i \mid y_{1:i-1})}_{\mathclap{\substack{\text{predictive rule} \\ \textcolor{#8C8C8C}{\text{(Bayesian posterior predictive)}}}}}}
-\;=\; \underbrace{p(y_1, \dots, y_n)}_{\text{joint}}
-\;\overset{\substack{Y_1, Y_2, \dots \\ \text{exchangeable}}}{\rule{0pt}{0.95em}=}\;
-\overset{\textbf{Traditional Bayes view}}{\underbrace{\int \prod_{i=1}^{n} f(y_i \mid \theta)\, \pi(\theta)\, d\theta}_{\text{prior} \,\times\, \text{likelihood}}}
+\underbrace{\prod_{i=n+1}^{N} p(y_i \mid y_{1:i-1})}_{\mathclap{\substack{\text{predictive rule} \\ \textcolor{#8C8C8C}{\text{(Bayesian posterior predictive)}}}}}
+\;=\; \underbrace{p(y_{n+1}, \dots, y_N \mid y_{1:n})}_{\text{joint of the future}}
+\;\overset{\substack{Y_{n+1}, Y_{n+2}, \dots \\ \text{exchangeable}}}{\rule{0pt}{0.95em}=}\;
+\underbrace{\int \prod_{i=n+1}^{N} f(y_i \mid \theta)\, \pi(\theta \mid y_{1:n})\, d\theta}_{\text{posterior} \,\times\, \text{likelihood}}
 $$
 :::
 
