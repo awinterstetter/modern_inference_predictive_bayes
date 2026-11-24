@@ -146,16 +146,16 @@ $$
 
 ::: {style="padding-top: 1em"}
 ::: fragment
-- We only observe a fixed sample $y_{1:n}$ instead of an infinite sequence $Y_{1:\infty}$, so we cannot pinpoint $\theta$ exactly
+- We only observe a fixed sample $y_{1:n}$ instead of an infinite sequence $Y_{1:\infty}$
 :::
 
 ::: fragment
-[Uncertainty about $\theta$ stems entirely from the missing observations $Y_{n+1:\infty}$]{.then}
-:::
+- Uncertainty about $\theta$ stems entirely from the missing observations $Y_{n+1:\infty}$
 :::
 
-::: {.fragment style="padding-top: 1.5em; text-align: center; font-weight: 700; color: #2F2F2F"}
-Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$ after observing $y_{1:n}$?
+::: fragment
+[Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$ after observing $y_{1:n}$]{.then}
+:::
 :::
 
 ## Predictive resampling
@@ -397,18 +397,6 @@ $$
 :::: {.columns style="padding-top: 0.4em"}
 ::: {.column width="46%"}
 ::: box
-[**c.i.d. sequence of observations** \[5\]]{style="color: #2F2F2F"}
-
-$P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
-
-[Given the data $y_{1:i}$, each future observation $Y_{i+1}, Y_{i+2}, \dots$ has distribution $P_i$]{style="font-size: 0.85em; color: #626468"}
-:::
-:::
-::: {.column style="width: 8%; text-align: center; font-size: 1.8em; padding-top: 1.1em"}
-$\Leftrightarrow$
-:::
-::: {.column width="46%"}
-::: box
 [**Predictives form a martingale**]{style="color: #2F2F2F"}
 
 $E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
@@ -416,17 +404,26 @@ $E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
 [Given the data so far, the predictive is not expected to move in any particular direction]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
+::: {.column .fragment fragment-index="2" style="width: 8%; text-align: center; font-size: 1.8em; padding-top: 1.1em"}
+$\Leftrightarrow$
+:::
+::: {.column width="46%"}
+::: {.box .fragment fragment-index="2"}
+[**c.i.d. sequence of observations** \[5\]]{style="color: #2F2F2F"}
+
+$P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
+
+[Given the data $y_{1:i}$, each future observation $Y_{i+1}, Y_{i+2}, \dots$ has distribution $P_i$]{style="font-size: 0.85em; color: #626468"}
+:::
+:::
 ::::
 
 :::: {.columns style="margin-top: -0.6em"}
-::: {.column style="width: 50%; box-sizing: border-box"}
-&nbsp;
-:::
-::: {.column style="width: 50%; box-sizing: border-box; padding-left: 4%"}
-::: {style="text-align: center; font-size: 1.8em; line-height: 1; margin: 0.1em 0"}
+::: {.column style="width: 46%; box-sizing: border-box"}
+::: {.fragment fragment-index="1" style="text-align: center; font-size: 1.8em; line-height: 1; margin: 0.1em 0"}
 $\Downarrow$
 :::
-::: box
+::: {.box .fragment fragment-index="1"}
 [**Predictive coherence**]{style="color: #2F2F2F"}
 
 $P_\infty$ exists and $E[P_\infty \mid y_{1:n}] = P_n$
@@ -434,10 +431,13 @@ $P_\infty$ exists and $E[P_\infty \mid y_{1:n}] = P_n$
 $\Rightarrow$ resulting martingale posterior is a valid posterior \[1, 5\]
 :::
 :::
+::: {.column style="width: 54%; box-sizing: border-box"}
+&nbsp;
+:::
 ::::
 
 ## Implications for generalization capabilities
-[Traditional Bayes implies exchangeable observations, predictive Bayes only requires c.i.d. observations]{.subtitle}
+[Every exchangeable sequence is c.i.d., but not every c.i.d. sequence is exchangeable]{.subtitle}
 
 - Predictive Bayes imposes a weaker condition on the predicted observations for obtaining valid posteriors
 - c.i.d. observations don't need to be exchangeable as in traditional Bayes
