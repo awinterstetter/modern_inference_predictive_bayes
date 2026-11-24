@@ -168,8 +168,8 @@
     ctx.beginPath(); ctx.moveTo(L.x0, L.y0 - 10); ctx.lineTo(L.x0, L.y1); ctx.lineTo(L.x1 + 12, L.y1); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(L.x1 + 12, L.y1); ctx.lineTo(L.x1 + 5, L.y1 - 4); ctx.moveTo(L.x1 + 12, L.y1); ctx.lineTo(L.x1 + 5, L.y1 + 4); ctx.stroke();
     ctx.font = '16px Arial, Helvetica, sans-serif'; ctx.fillStyle = muted; ctx.textAlign = 'center'; ctx.strokeStyle = muted; ctx.lineWidth = 1;
-    for (const k of [10, 100]) { ctx.beginPath(); ctx.moveTo(X(k), L.y1); ctx.lineTo(X(k), L.y1 + 4); ctx.stroke(); ctx.fillText(String(k), X(k), L.y1 + 22); }
-    ctx.font = '20px Arial, Helvetica, sans-serif'; ctx.fillText('forward step i (log scale)', (L.x0 + L.x1) / 2, L.y1 + 54);
+    for (const k of [20, 100].map(i => i - n)) { ctx.beginPath(); ctx.moveTo(X(k), L.y1); ctx.lineTo(X(k), L.y1 + 4); ctx.stroke(); ctx.fillText(String(k + n), X(k), L.y1 + 22); }
+    ctx.font = '20px Arial, Helvetica, sans-serif'; ctx.fillText('number of observations i (log scale)', (L.x0 + L.x1) / 2, L.y1 + 54);
     lab('yn', tex('y_{1:n}'), L.x0, L.y1 + 8, -50, 0);
     lab('yN', tex('y_{1:N}'), L.x1, L.y1 + 8, -50, 0);
     ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(L.x0, Y(thetaHat), 5, 0, 7); ctx.fill();

@@ -81,7 +81,7 @@ def main():
         ax.set_ylim(THETA_N - 1.6, THETA_N + 1.6)
         ax.set_title(title, color=TEXT, fontsize=20, fontweight="bold", loc="left", pad=28)
         ax.text(0.0, 1.02, sub, transform=ax.transAxes, color=FG, fontsize=16, va="bottom")
-        ax.set_xlabel("forward step $i$ (log scale)", color=FG)
+        ax.set_xlabel("number of observations $i$ (log scale)", color=FG)
         for side in ("top", "right"):
             ax.spines[side].set_visible(False)
         for side in ("left", "bottom"):
@@ -92,7 +92,7 @@ def main():
 
     fig.tight_layout(w_pad=2.5)
     out = Path(__file__).with_name("conditions.svg")
-    fig.savefig(out, transparent=True)
+    fig.savefig(out, transparent=True, bbox_inches="tight", pad_inches=0)
     print("wrote", out)
 
 

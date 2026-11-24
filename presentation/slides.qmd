@@ -166,7 +166,7 @@ So how do we generate realizations of $Y_{n+1:\infty}$?
 ::: {.box style="margin-top: 0.4em; font-size: 0.9em; --r-block-margin: 15px"}
 [**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
 
-Compute $p_n$ from the observed data $y_{1:n}$, with $p_i = p(\cdot \mid y_{1:n}, Y_{n+1:i})$; choose $B$ paths and a horizon $N > n$
+Compute $P_n$ from the observed data $y_{1:n}$, with $P_i = P(\cdot \mid y_{1:n}, Y_{n+1:i})$; choose $B$ paths and a horizon $N > n$
 
 For $b = 1, \dots, B$:
 
@@ -174,9 +174,9 @@ For $b = 1, \dots, B$:
 For $i = n+1, \dots, N$:
 
 ::: {style="padding-left: 1.5em"}
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $Y_i \sim p_{i-1}$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $Y_i \sim P_{i-1}$
 
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $p_i \leftarrow \{p_{i-1}, Y_i\}$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $P_i \leftarrow \{P_{i-1}, Y_i\}$
 :::
 
 [[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter of interest given the “full” data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Evaluate $\theta_N^{(b)} = \theta(y_{1:n}, Y_{n+1:N})$
@@ -237,11 +237,11 @@ How to express traditional Bayesian inference in terms of predictive Bayesian in
 # Making the predictive resampling framework explicit
 [The framework is made explicit by three design choices]{.subtitle}
 
-:::: {style="display: flex; align-items: flex-start; gap: 3em; margin-top: 2em"}
-::: {.box style="margin: 0; flex: 0 0 44%; box-sizing: border-box; font-size: 0.9em; --r-block-margin: 17px"}
+:::: {style="display: flex; align-items: stretch; gap: 3em; margin-top: 2em"}
+::: {.box style="margin: 0; flex: 0 0 44%; box-sizing: border-box; font-size: 0.9em; --r-block-margin: 22px"}
 [**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
 
-Compute $\textcolor{#00883A}{p_n}$ from $y_{1:n}$; choose $B$, $N$
+Compute $\textcolor{#00883A}{P_n}$ from $y_{1:n}$; choose $B$, $N$
 
 For $b = 1, \dots, B$:
 
@@ -249,9 +249,9 @@ For $b = 1, \dots, B$:
 For $i = n+1, \dots, N$:
 
 ::: {style="padding-left: 1.5em"}
-Sample $Y_i \sim p_{i-1}$
+Sample $Y_i \sim P_{i-1}$
 
-Update $\textcolor{#D9822B}{p_i \leftarrow \{p_{i-1}, Y_i\}}$
+Update $\textcolor{#D9822B}{P_i \leftarrow \{P_{i-1}, Y_i\}}$
 :::
 
 Evaluate $\theta_N^{(b)} = \textcolor{#2F6DB5}{\theta}(y_{1:n}, Y_{n+1:N})$
@@ -260,20 +260,20 @@ Evaluate $\theta_N^{(b)} = \textcolor{#2F6DB5}{\theta}(y_{1:n}, Y_{n+1:N})$
 Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
 :::
 
-::: {style="flex: 1; font-size: 0.9em; --r-block-margin: 30px; margin-top: -13px"}
-**Design choices**[\
-**Traditional Bayesian Inference (posterior mean)**\
-[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, Y_{n+1:i})$]{style="font-weight: 400; font-size: 0.82em"}]{.fragment .collapse fragment-index="1"}
+::: {style="flex: 1; font-size: 0.9em; --r-block-margin: 0px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.5em 0"}
+[**Traditional Bayesian Inference**\
+[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, Y_{n+1:i})$]{style="font-weight: 400"}]{.fragment fragment-index="1"}
 
 [**(1)** Initial Predictive Density]{style="color: #00883A"}\
-[$p_n(y) = \int f(y \mid \theta)\, \pi_n(\theta)\, d\theta$]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+[$\pi_n(\theta) \propto \prod_{j=1}^{n} f(y_j \mid \theta)\, \pi(\theta)$\
+$p_n(y) = \int f(y \mid \theta)\, \pi_n(\theta)\, d\theta$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; line-height: 1.8; min-height: 3.6em"}
 
 [**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}\
 [$\pi_i(\theta) \propto f(Y_i \mid \theta)\, \pi_{i-1}(\theta)$\
-$p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$ [– Bayesian posterior predictive]{style="color: #8C8C8C"}]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em; line-height: 1.8"}
+$p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; line-height: 1.8; min-height: 3.6em"}
 
 [**(3)** Statistic of Interest]{style="color: #2F6DB5"}\
-[$\theta_N = \bar\theta_N = \int \theta\, \pi_N(\theta)\, d\theta$ (posterior mean)]{.fragment .collapse fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; font-size: 0.82em"}
+[$\theta_N = \bar\theta_N = \int \theta\, \pi_N(\theta)\, d\theta$ (posterior mean)]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em"}
 :::
 ::::
 
@@ -291,7 +291,7 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$ [– Bayesian posteri
 [De Finetti's representation theorem links traditional Bayesian inference to a predictive framework]{.subtitle}
 
 - **Exchangeability:** $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$
-- **de Finetti \[4\]:** infinite exchangeable sequences have a prior $\times$ likelihood representation
+- **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood representation
 
 ::: {.box style="padding: 0.4em 1em 0.7em; margin-top: 0.8em"}
 $$
@@ -309,7 +309,7 @@ $$
 ::: qa
 [How to express traditional Bayesian inference in terms of predictive Bayesian inference?]{.asked}
 
-[Use the Bayesian posterior predictive as the update rule]{.then}
+[Bayesian posterior predictive as the predictive rule]{.then}
 
 [The sequence of generated random variables $Y_{n+1}, Y_{n+2}, \dots$ must be **exchangeable** to recover the traditional Bayesian posterior]{.then}
 :::
@@ -319,9 +319,9 @@ $$
 Can predictive Bayesian inference generalize from traditional Bayesian inference?
 
 ## Requirements for a valid posterior
-[What must hold for predictive coherence]{.subtitle}
+[The predictives must converge, and their limit must stay centred on $P_n$]{.subtitle}
 
-- Now we specify 1-step-ahead predictive distributions without an implicit prior $\times$ likelihood representation
+- Specify 1-step-ahead predictive distributions without requiring an implicit prior $\times$ likelihood representation
 
   $$
   P_i(y) = P(Y_{i+1} \le y \mid y_{1:i}) \qquad i = n, n+1, \dots
@@ -351,16 +351,18 @@ $E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
 ::::
 
 ## What the two conditions rule out
-[Same model and random draws; coloured line = average over paths, dashed = $\bar\theta_n$]{.subtitle}
+[If existence fails the paths never settle, and if unbiasedness fails they settle away from $\bar\theta_n$]{.subtitle}
 
+::: {style="padding-top: 1.2em"}
 ![](resources/conditions.svg){.nostretch width=100% fig-align="center"}
+:::
 
-[What does the valid case look like from the perspective of the predictive distribution?]{.then}
+[What do the predictive distributions themselves converge to?]{.then}
 
 ## From the predictive to the martingale posterior
-[Each path converges to its own distribution $F_\infty$; applying $\theta$ to each gives a draw from the posterior]{.subtitle}
+[The predictive distribution converges to the empirical distribution of the completed data]{.subtitle}
 
-<iframe class="embed mp-steps" src="resources/pf_limit.html?steps&v=15"></iframe>
+<iframe class="embed mp-steps" src="resources/pf_limit.html?steps&v=16"></iframe>
 
 ::: {style="display: none"}
 []{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}[]{.fragment .mp-step}
@@ -463,12 +465,10 @@ Practical applications of predictive Bayesian inference
 
 **Advantages**
 
-- Misspecification of prior $\times$ likelihood can be avoided
-- Probabilities are only assigned to observable quantities instead of latent parameters
-- Updating the predictive rule with each new observation directly mirrors Bayesian learning, without assuming exchangeability
-- Bayesian inference can be performed with only the posterior predictive distribution known
+- Only the predictive rule needs to be designed, so no prior $\times$ likelihood has to be chosen (or misspecified)
+- Bayesian learning happens by updating the predictive with each new observation, without requiring latent parameters or exchangeability
 
-[Formulate a coherent predictive rule and test it on the observed data]{.then}
+[Formulate a predictive rule satisfying the martingale property and test it on the observed data]{.then}
 
 **Caveats**
 
@@ -533,6 +533,8 @@ $$
 
 - $F_\infty$: empirical distribution of the completed dataset $\{y_{1:n}, Y_{n+1:\infty}\}$
 - Under c.i.d., $F_\infty = P_\infty$ almost surely, so $\theta(F_\infty) = \theta(P_\infty)$ \[1, 5\]
+
+## Backup: The martingale property is sufficient, but not necessary {visibility="uncounted"}
 
 
 ## References {visibility="uncounted"}

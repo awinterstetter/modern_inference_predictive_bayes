@@ -289,11 +289,11 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     hideAll();
     lab('yn', TX('y_{1:n}'), L.x0, L.y1 + 8, -50, 0);
     lab('yN', TX('y_{1:N}'), L.x1, L.y1 + 8, -50, 0);
-    ctx.textAlign = 'center'; ctx.fillStyle = muted; ctx.fillText(logX ? 'forward step i (log scale)' : 'forward step i', (L.x0 + L.x1) / 2, L.y1 + D_LBL);
+    ctx.textAlign = 'center'; ctx.fillStyle = muted; ctx.fillText(logX ? 'number of observations i (log scale)' : 'number of observations i', (L.x0 + L.x1) / 2, L.y1 + D_LBL);
     ctx.font = F_TICK + 'px ' + FF; ctx.strokeStyle = muted; ctx.lineWidth = 1;
-    for (const k of (logX ? [10, 100] : [200, 400, 600, 800])) {
+    for (const k of (logX ? [20, 100] : [200, 400, 600, 800]).map(i => i - n)) {
       ctx.beginPath(); ctx.moveTo(X(k), L.y1); ctx.lineTo(X(k), L.y1 + 4); ctx.stroke();
-      ctx.fillText(String(k), X(k), L.y1 + D_TICK);
+      ctx.fillText(String(k + n), X(k), L.y1 + D_TICK);
     }
     ctx.font = F_LBL + 'px ' + FF;
 

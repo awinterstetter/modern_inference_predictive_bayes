@@ -252,7 +252,7 @@
       `<span class="sw" style="border-color:${col('--green')}"></span>histogram, ${tex('B = ' + B)}<br>` +
       `<span class="sw" style="border-color:${muted}; border-top-style:dashed"></span>${tex('\\pi(\\theta \\mid y_{1:n})')}`;
     lab('leg', legend, L.x1 + 30, (L.y0 + L.y1) / 2, 0, -50);
-    if (step <= THREE) stats.innerHTML = 'largest gap ' + tex('\\sup_y |F_N(y) - P_N(y)|') + ' = ' + gaps.map(g => g.toFixed(3)).join(', ');
+    if (step <= THREE) stats.innerHTML = '';
     else if (step === THETA) stats.innerHTML = tex('\\theta(F) = \\int y \\, dF(y)') + ': one value per path';
     else stats.innerHTML = `${dstats.nd} draws: mean ${dstats.mean.toFixed(3)}, sd ${dstats.sd.toFixed(3)}  (analytic posterior: ${post.m.toFixed(3)}, ${post.s.toFixed(3)})`;
     backBtn.disabled = step <= 0; nextBtn.disabled = step >= LAST;
