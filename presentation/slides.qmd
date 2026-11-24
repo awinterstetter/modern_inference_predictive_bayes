@@ -302,7 +302,7 @@ $$
 $$
 :::
 
-[Predictive resampling coincides with the traditional Bayesian posterior $\pi(\theta \mid y_{1:n})$ when the predicted observations are exchangeable]{.then}
+[With the Bayesian posterior predictive as the predictive rule, the imputed sequence is exchangeable, and predictive resampling recovers $\pi(\theta \mid y_{1:n})$]{.then}
 
 ## {.answer}
 
@@ -311,7 +311,7 @@ $$
 
 [Bayesian posterior predictive as the predictive rule]{.then}
 
-[The sequence of generated random variables $Y_{n+1}, Y_{n+2}, \dots$ must be **exchangeable** to recover the traditional Bayesian posterior]{.then}
+[This rule makes the generated sequence $Y_{n+1}, Y_{n+2}, \dots$ **exchangeable**, which is why the traditional Bayesian posterior is recovered]{.then}
 :::
 
 ## {.question}
@@ -402,7 +402,7 @@ $$
 
 $P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
 
-[Given the data $y_{1:i}$, all future observations $Y_{i+1}, Y_{i+2}, \dots$ are drawn from the same predictive $P_i$]{style="font-size: 0.85em; color: #626468"}
+[Given the data $y_{1:i}$, each future observation $Y_{i+1}, Y_{i+2}, \dots$ has distribution $P_i$]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
 ::: {.column style="width: 8%; text-align: center; font-size: 1.8em; padding-top: 1.1em"}
