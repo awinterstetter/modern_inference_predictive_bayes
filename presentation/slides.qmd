@@ -132,7 +132,7 @@ $\Rightarrow$ **Source of uncertainty:** missing observations
 ::::
 
 ## Doob's Theorem
-[With infinite data, we could determine the parameter $\theta$ exactly]{.subtitle}
+[With infinitely many observations, the posterior mean converges to the $\theta$ that generated the data]{.subtitle}
 
 ::: {.box style="margin-top: 2em"}
 [**Theorem (Doob)** \[2\]]{style="color: #2F2F2F"}
@@ -152,12 +152,12 @@ $$
 :::
 
 ::: fragment
-[Uncertainty about the actual value of $\theta$ due to the fact that the realizations $Y_{n+1:\infty}$ are missing]{.then}
+[Uncertainty about $\theta$ stems entirely from the missing observations $Y_{n+1:\infty}$]{.then}
 :::
 :::
 
 ::: {.fragment style="padding-top: 1.5em; text-align: center; font-weight: 700; color: #2F2F2F"}
-So how do we generate realizations of $Y_{n+1:\infty}$?
+Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$?
 :::
 
 ## Predictive resampling
