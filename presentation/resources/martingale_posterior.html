@@ -331,7 +331,7 @@ window.onerror = (msg, src) => (!src && /Script error/.test(String(msg))) ? true
     // right panel axis
     ctx.strokeStyle = fg; ctx.lineWidth = 1.4;
     ctx.beginPath(); ctx.moveTo(L.r0, L.y0); ctx.lineTo(L.r0, L.y1); ctx.stroke();
-    lab('pi', TX('\\pi_N'), L.r0 + 16, L.y0 - 4, 0, -50, 'big');
+    lab('pi', TX('\\pi_N(\\theta \\mid y_{1:n})'), L.r0 + 16, L.y0 - 4, 0, -50, 'big');
 
     const done = paths.filter(isDone);
     const ends = done.map(p => p.vals[K]);

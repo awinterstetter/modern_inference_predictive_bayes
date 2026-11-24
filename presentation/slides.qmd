@@ -157,7 +157,7 @@ $$
 :::
 
 ::: {.fragment style="padding-top: 1.5em; text-align: center; font-weight: 700; color: #2F2F2F"}
-Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$?
+Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$ after observing $y_{1:n}$?
 :::
 
 ## Predictive resampling
@@ -196,7 +196,7 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \th
 ## Predictive Resampling Framework - Demonstration
 [Each path imputes future data; the limits form the posterior]{.subtitle}
 
-<iframe class="embed mp-steps" src="resources/martingale_posterior.html?embed&steps"></iframe>
+<iframe class="embed mp-steps" src="resources/martingale_posterior.html?embed&steps&v=2"></iframe>
 
 <!-- each arrow press pops up the next stage: path 1, path 2, path 3, all paths -->
 ::: {style="display: none"}
@@ -281,7 +281,7 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 ## Predictive Resampling - Traditional Bayesian Inference
 [With the Bayesian design choices, the endpoints recover the posterior $\pi(\theta \mid y_{1:n})$]{.subtitle}
 
-<iframe class="embed" src="resources/martingale_posterior.html?embed&frozen" style="height: 560px"></iframe>
+<iframe class="embed" src="resources/martingale_posterior.html?embed&frozen&v=2" style="height: 560px"></iframe>
 
 ::: {style="padding-top: 0.6em"}
 [Why does the predictive Bayes posterior approximately coincide with the traditional Bayes posterior?]{.then}
@@ -291,19 +291,19 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 [De Finetti's representation theorem links traditional Bayesian inference to a predictive framework]{.subtitle}
 
 - **Exchangeability:** $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$
-- **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood representation
-- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, Y_{n+2}, \dots$ is exchangeable
+- **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood
+- Bayesian posterior predictive makes the imputed sequence $Y_{n+1}, Y_{n+2}, \dots$ exchangeable
 
-::: {.box style="padding: 0.4em 1em 0.7em; margin-top: 0.8em"}
+::: {.box style="padding: 0.4em 1em 0.3em; margin-top: 0.8em"}
 $$
 \underbrace{\prod_{i=n+1}^{N} p(y_i \mid y_{1:i-1})}_{\mathclap{\substack{\text{predictive rule} \\ \textcolor{#8C8C8C}{\text{(Bayesian posterior predictive)}}}}}
-\;=\; \underbrace{p(y_{n+1}, \dots, y_N \mid y_{1:n})}_{\text{joint of the future}}
+\;=\; \underbrace{p(y_{n+1}, \dots, y_N \mid y_{1:n})}_{\text{joint probability of missing data}}
 \;\overset{\substack{Y_{n+1}, Y_{n+2}, \dots \\ \text{exchangeable}}}{\rule{0pt}{0.95em}=}\;
 \underbrace{\int \prod_{i=n+1}^{N} f(y_i \mid \theta)\, \pi(\theta \mid y_{1:n})\, d\theta}_{\text{posterior} \,\times\, \text{likelihood}}
 $$
 :::
 
-[Predictive resampling recovers the traditional Bayesian posterior $\pi(\theta \mid y_{1:n})$ via Doob's theorem \[2\]]{.then}
+[Predictive rule produces $Y_{n+1:N}$, yielding $\mathbb{E}[\theta \mid y_{1:n}, Y_{n+1:N}] \overset{\text{a.s.}}{\longrightarrow} \theta \sim \pi(\theta \mid y_{1:n})$ via Doob \[2\]]{.then}
 
 ## {.answer}
 
@@ -312,7 +312,7 @@ $$
 
 [Bayesian posterior predictive as the predictive rule]{.then}
 
-[This rule makes the generated sequence $Y_{n+1}, Y_{n+2}, \dots$ **exchangeable**, which is why the traditional Bayesian posterior is recovered]{.then}
+[Generated sequence $Y_{n+1}, Y_{n+2}, \dots$ becomes **exchangeable**, implying an underlying prior $\times$ likelihood representation, so the traditional Bayesian posterior is recovered]{.then}
 :::
 
 ## {.question}
@@ -500,7 +500,7 @@ Practical applications of predictive Bayesian inference
 ## Backup: Predictive Resampling (with predictive densities) {visibility="uncounted"}
 [Original demo: path 1 pauses after 25 observations; hover shows the predictive density]{.subtitle}
 
-<iframe class="embed" src="resources/martingale_posterior_full.html?embed"></iframe>
+<iframe class="embed" src="resources/martingale_posterior_full.html?embed&v=2"></iframe>
 
 ## Backup: Exchangeability in predictive resampling {visibility="uncounted"}
 [Reordering the imputed observations changes the path, but not the endpoint $\bar\theta_N$]{.subtitle}
