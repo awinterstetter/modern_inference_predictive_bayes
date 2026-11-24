@@ -291,6 +291,7 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 [De Finetti's representation theorem links traditional Bayesian inference to a predictive framework]{.subtitle}
 
 - **Exchangeability:** $p(y_1, \dots, y_n) = p(y_{\sigma(1)}, \dots, y_{\sigma(n)})$ for all $n$ and every reordering $\sigma$
+- **Bayesian posterior predictive as predictive rule:** imputed sequence $Y_{n+1}, \dots, Y_N$ is exchangeable
 - **de Finetti \[4\]:** infinite exchangeable sequences of observations have an implicit prior $\times$ likelihood representation
 
 ::: {.box style="padding: 0.4em 1em 0.7em; margin-top: 0.8em"}
@@ -302,7 +303,7 @@ $$
 $$
 :::
 
-[With the Bayesian posterior predictive as the predictive rule, the imputed sequence is exchangeable, and predictive resampling recovers $\pi(\theta \mid y_{1:n})$]{.then}
+[Predictive resampling recovers the traditional Bayesian posterior $\pi(\theta \mid y_{1:n})$ via Doob's theorem \[2\]]{.then}
 
 ## {.answer}
 
@@ -414,7 +415,7 @@ $\Leftrightarrow$
 
 $E[P_i(y) \mid y_{1:i-1}] = P_{i-1}(y) \;\; \forall y$
 
-[Averaged over the next observation $Y_i \sim P_{i-1}$, the updated predictive $P_i$ equals the current one $P_{i-1}$]{style="font-size: 0.85em; color: #626468"}
+[Given the data so far, the predictive is not expected to move in any particular direction]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
 ::::
