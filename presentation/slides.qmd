@@ -55,11 +55,11 @@ $$
   & \xrightarrow[\text{predictive}]{\qquad\quad}
   & \underset{\text{posterior predictive}}{p(y \mid y_{1:n})}
   & & \\[-1.2em]
-  & & \hphantom{\underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}}
+  & & \hphantom{\underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}}
   & \hphantom{\xleftarrow[\text{impute new observations}]{\qquad\quad}}
-  & \hphantom{\underset{\substack{\text{predictive density}\\\text{after observing data}}}{p(y \mid y_{1:n})}}
+  & \hphantom{\underset{\text{updated predictive}}{p(y \mid y_{1:n})}}
   & \hphantom{\xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}}
-  & \hphantom{\underset{\substack{\text{initial}\\\text{predictive density}}}{p(y)}}
+  & \hphantom{\underset{\text{initial predictive}}{p(y)}}
 \end{array}
 $$
 :::
@@ -68,11 +68,11 @@ $$
 $$
 \begin{array}{ccccccc}
   & & & & \mathclap{\textbf{Predictive Bayesian Inference}} & & \\[1em]
-  & & \underset{\text{martingale posterior}}{\pi(\theta \mid y_{1:n})}
+  & & \underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}
   & \xleftarrow[\text{impute new observations}]{\qquad\quad}
-  & \underset{\substack{\text{predictive density}\\\text{after observing data}}}{p(y \mid y_{1:n})}
+  & \underset{\text{updated predictive}}{p(y \mid y_{1:n})}
   & \xleftarrow[\text{observe } y_{1:n}]{\qquad\quad}
-  & \underset{\substack{\text{initial}\\\text{predictive density}}}{p(y)} \\[-1.2em]
+  & \underset{\text{initial predictive}}{p(y)} \\[-1.2em]
 \hphantom{\underset{\text{likelihood}}{f(y \mid \theta)},\ \underset{\text{prior}}{\pi(\theta)}}
   & \hphantom{\xrightarrow[\text{Bayes}]{\qquad\quad}}
   & \hphantom{\underset{\text{posterior}}{\pi(\theta \mid y_{1:n})}}
@@ -92,27 +92,26 @@ $$
 
 ::: {.agenda style="padding-top: 1em"}
 1. What is Bayesian uncertainty?
-2. How to express traditional Bayesian inference in terms of predictive Bayesian inference?
+2. How does predictive Bayes reproduce traditional Bayes?
 3. Can predictive Bayesian inference generalize from traditional Bayesian inference?
 4. Practical Application
 :::
 
-## {.question}
+## {.question data-q="1"}
 
-Where does Bayesian uncertainty come from?
+Where does posterior uncertainty come from?
 
-## Bayesian Perspectives on Uncertainty
-[Where does the uncertainty represented by the posterior come from?]{.subtitle}
+## Two Perspectives on Posterior Uncertainty
+[Same posterior, different source of uncertainty]{.subtitle}
 
 ![](resources/posterior.svg){.nostretch width=40% fig-align="center"}
 
-:::: {.columns style="margin-top: -0.5em"}
+:::: {.columns style="margin-top: 1em"}
 ::: {.column width="49%"}
 ::: box
 [**Traditional Bayesian view**]{style="color: #2F2F2F"}
 
 - $\theta$ is random, drawn from the prior $\pi$
-- Posterior describes uncertainty about $\theta$
 
 $\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
 :::
@@ -124,7 +123,6 @@ $\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
 [**Predictive Bayesian view**]{style="color: #2F2F2F"}
 
 - $\theta = \theta(y_{1:\infty})$ is a function of the data
-- Posterior describes uncertainty about $Y_{n+1:\infty}$
 
 $\Rightarrow$ **Source of uncertainty:** missing observations
 :::
@@ -223,14 +221,14 @@ window.addEventListener('load', () => {
 ## {.answer}
 
 ::: qa
-[Where does Bayesian uncertainty come from?]{.asked}
+[Where does posterior uncertainty come from?]{.asked}
 
 [From the missing observations $Y_{n+1:\infty}$, which we can simulate using predictive resampling]{.then}
 :::
 
-## {.question}
+## {.question data-q="2"}
 
-How to express traditional Bayesian inference in terms of predictive Bayesian inference?
+How does predictive Bayes reproduce traditional Bayes?
 
 
 
@@ -308,14 +306,14 @@ $$
 ## {.answer}
 
 ::: qa
-[How to express traditional Bayesian inference in terms of predictive Bayesian inference?]{.asked}
+[How does predictive Bayes reproduce traditional Bayes?]{.asked}
 
 [Bayesian posterior predictive as the predictive rule]{.then}
 
 [Generated sequence $Y_{n+1}, Y_{n+2}, \dots$ becomes **exchangeable**, implying an underlying prior $\times$ likelihood representation, so the traditional Bayesian posterior is recovered]{.then}
 :::
 
-## {.question}
+## {.question data-q="3"}
 
 Can predictive Bayesian inference generalize from traditional Bayesian inference?
 
@@ -458,7 +456,7 @@ $\Rightarrow$ resulting martingale posterior is a valid posterior \[1, 5\]
 [Update rules whose predictives form a martingale yield valid posteriors without a prior $\times$ likelihood setup]{.then}
 :::
 
-## {.question}
+## {.question data-q="4"}
 
 Practical applications of predictive Bayesian inference
 

@@ -493,6 +493,22 @@ $lmu-letterbox: #2b2b2b;   // colour of the bars around the slide
   background: #fff;
 }
 
+// part number above the question:   ## {.question data-q="1"}  -> "Part 1"
+// (set by hand: reveal.js hides inactive slides, so CSS counters can't count them)
+@for $q from 1 through 9 {
+  .reveal .slides section.slide.question[data-q="#{$q}"] > p::before { content: "Part #{$q}"; }
+}
+.reveal .slides section.slide.question[data-q] > p::before {
+  display: block;
+  font-size: 0.5em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $lmu-green;
+  margin-bottom: 0.5em;
+}
+.reveal .slides section.slide.question.has-dark-background > p::before { color: #fff; }
+
 // =====================================================================
 //  Highlight a box on the next click (same slide, same slide number):
 //    ::: {.box .fragment .custom .focus-outline}
