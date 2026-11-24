@@ -284,7 +284,7 @@ $p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-i
 <iframe class="embed" src="resources/martingale_posterior.html?embed&frozen&v=2" style="height: 560px"></iframe>
 
 ::: {style="padding-top: 0.6em"}
-[Why does the predictive Bayes posterior approximately coincide with the traditional Bayes posterior?]{.then}
+[Why does predictive resampling approximately recover the analytical posterior $\pi(\theta \mid y_{1:n})$?]{.then}
 :::
 
 ## Equivalence of predictive Bayes with traditional Bayes
