@@ -113,7 +113,7 @@ Where does posterior uncertainty come from?
 
 - $\theta$ is random, drawn from the prior $\pi$
 
-$\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
+**Source of uncertainty:** unknown parameter $\theta$
 :::
 :::
 ::: {.column width="2%"}
@@ -122,9 +122,10 @@ $\Rightarrow$ **Source of uncertainty:** the parameter $\theta$
 ::: box
 [**Predictive Bayesian view**]{style="color: #2F2F2F"}
 
-- $\theta = \theta(y_{1:\infty})$ is a function of the data
+- $\theta = \theta(y_{1:n}, Y_{n+1:\infty})$ is a function of the data
+- Missing data $Y_{n+1:\infty}$ is random
 
-$\Rightarrow$ **Source of uncertainty:** missing observations
+**Source of uncertainty:** missing observations
 :::
 :::
 ::::
