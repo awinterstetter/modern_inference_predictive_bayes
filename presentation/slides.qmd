@@ -161,10 +161,12 @@ $$
 ## Predictive resampling
 [The missing observations $Y_{n+1:\infty}$ are simulated up to a large horizon $N$]{.subtitle}
 
-::: {.box style="margin-top: 0.4em; font-size: 0.9em; --r-block-margin: 15px"}
+::: {.box style="margin-top: 0.4em; font-size: 0.9em; --r-block-margin: 10px"}
 [**Algorithm - Predictive Resampling**]{style="color: #2F2F2F"}
 
-Compute $P_n$ from the observed data $y_{1:n}$, with $P_i = P(\cdot \mid y_{1:n}, Y_{n+1:i})$; choose $B$ paths and a horizon $N > n$
+Input: observed data $y_{1:n}$, number of paths $B$, horizon $N > n$
+
+Compute the initial predictive $P_n$ from $y_{1:n}$
 
 For $b = 1, \dots, B$:
 
@@ -174,13 +176,13 @@ For $i = n+1, \dots, N$:
 ::: {style="padding-left: 1.5em"}
 [[▷]{style="font-size: 0.7em; margin-right: 0.4em"}simulate the next observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Sample $Y_i \sim P_{i-1}$
 
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive based on the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $P_i \leftarrow \{P_{i-1}, Y_i\}$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}update the predictive with the new observation]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Update $P_i \leftarrow \{P_{i-1}, Y_i\}$
 :::
 
-[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter of interest given the “full” data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Evaluate $\theta_N^{(b)} = \theta(y_{1:n}, Y_{n+1:N})$
+[[▷]{style="font-size: 0.7em; margin-right: 0.4em"}compute the parameter on the completed data]{style="float: right; width: 25em; text-align: left; color: #8C8C8C"}Evaluate $\theta_N^{(b)} = \theta(y_{1:n}, Y_{n+1:N})$
 :::
 
-Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \theta_\infty^{(b)}$ for large $N$
+Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
 :::
 
 ::: {style="padding-top: 0.3em"}
@@ -188,7 +190,7 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$, with $\theta_N^{(b)} \approx \th
 :::
 
 ::: {style="text-align: right; padding-top: 0.1em"}
-[Algorithm adapted from \[1\]; notation following \[3\]]{.source}
+[Algorithm adapted from \[1\]]{.source}
 :::
 
 ## Predictive Resampling Framework - Demonstration
