@@ -262,19 +262,22 @@ Return $\theta_N^{(1)}, \dots, \theta_N^{(B)}$
 :::
 
 ::: {style="flex: 1; font-size: 0.9em; --r-block-margin: 0px; display: flex; flex-direction: column; justify-content: space-between; padding: 0.5em 0"}
-[**Traditional Bayesian Inference**\
-[with $\pi_i(\theta) := \pi(\theta \mid y_{1:n}, Y_{n+1:i})$]{style="font-weight: 400"}]{.fragment fragment-index="1"}
+[**Traditional Bayesian Inference**]{.fragment fragment-index="1"}
 
 [**(1)** Initial Predictive Density]{style="color: #00883A"}\
-[$\pi_n(\theta) \propto \prod_{j=1}^{n} f(y_j \mid \theta)\, \pi(\theta)$\
-$p_n(y) = \int f(y \mid \theta)\, \pi_n(\theta)\, d\theta$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; line-height: 1.8; min-height: 3.6em"}
+[Posterior predictive given the observed data $y_{1:n}$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em"}
 
-[**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}\
-[$\pi_i(\theta) \propto f(Y_i \mid \theta)\, \pi_{i-1}(\theta)$\
-$p_i(y) = \int f(y \mid \theta)\, \pi_i(\theta)\, d\theta$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em; line-height: 1.8; min-height: 3.6em"}
+::: {}
+[**(2)** Update Rule for the Predictive Density]{style="color: #D9822B"}
+
+::: {.fragment fragment-index="1" style="color: #2F2F2F; margin-top: 0.35em"}
+- Sample $Y_i$ from the current predictive density
+- Update the posterior distribution and predictive density
+:::
+:::
 
 [**(3)** Statistic of Interest]{style="color: #2F6DB5"}\
-[$\theta_N = \bar\theta_N = \int \theta\, \pi_N(\theta)\, d\theta$ (posterior mean)]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em"}
+[Posterior mean of $\theta$ given $\{y_{1:n}, Y_{n+1:N}\}$]{.fragment fragment-index="1" style="color: #2F2F2F; display: inline-block; margin-top: 0.35em"}
 :::
 ::::
 
@@ -439,16 +442,6 @@ $\Rightarrow$ resulting martingale posterior is a valid posterior \[1, 5\]
 :::
 ::::
 
-## Implications for generalization capabilities
-[Every exchangeable sequence is c.i.d., but not every c.i.d. sequence is exchangeable]{.subtitle}
-
-- Predictive Bayes imposes a weaker condition on the predicted observations for obtaining valid posteriors
-- c.i.d. observations don't need to be exchangeable as in traditional Bayes
-
-![](resources/venn_main.svg){.nostretch width=62% fig-align="center"}
-
-[Given that the predictive rule keeps the martingale property, valid posteriors can be acquired without an implicit prior $\times$ likelihood representation]{.then}
-
 ## {.answer}
 
 ::: qa
@@ -521,6 +514,16 @@ Practical applications of predictive Bayesian inference
 [i.i.d. $\subset$ exchangeable $\subset$ c.i.d.: each step outward drops one restriction, a valid posterior remains]{.subtitle}
 
 ![](resources/venn.svg){.nostretch width=88% fig-align="center"}
+
+## Backup: Implications for generalization capabilities {visibility="uncounted"}
+[Every exchangeable sequence is c.i.d., but not every c.i.d. sequence is exchangeable]{.subtitle}
+
+- Predictive Bayes imposes a weaker condition on the predicted observations for obtaining valid posteriors
+- c.i.d. observations don't need to be exchangeable as in traditional Bayes
+
+![](resources/venn_main.svg){.nostretch width=62% fig-align="center"}
+
+[Given that the predictive rule keeps the martingale property, valid posteriors can be acquired without an implicit prior $\times$ likelihood representation]{.then}
 
 ## Backup: Martingale posterior (limit definition) {visibility="uncounted"}
 [Definition 1 of \[1\]: the limit of the finite martingale posterior]{.subtitle}
