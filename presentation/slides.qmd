@@ -130,17 +130,17 @@ $\Rightarrow$ **Source of uncertainty:** missing observations
 ::::
 
 ## Doob's Theorem
-[With infinitely many observations, the posterior mean converges to the $\theta$ that generated the data]{.subtitle}
+[With infinitely many observations, the posterior mean converges to the $\Theta$ that generated the data]{.subtitle}
 
 ::: {.box style="margin-top: 2em"}
 [**Theorem (Doob)** \[2\]]{style="color: #2F2F2F"}
 
-Let $\theta \sim \pi$ with $E[|\theta|] < \infty$ and $Y_1, Y_2, \dots \mid \theta \overset{iid}{\sim} f(\cdot \mid \theta)$.
+Let $\Theta \sim \pi$ with $E[|\Theta|] < \infty$ and $Y_1, Y_2, \dots \mid \Theta \overset{iid}{\sim} f(\cdot \mid \Theta)$.
 
 Under measurability and identifiability conditions on $f(\cdot \mid \theta)$,
 
 $$
-\bar\theta_N = E[\theta \mid Y_{1:N}] \;\longrightarrow\; \theta \quad \text{a.s.} \qquad \text{for } N \to \infty
+\bar\theta_N = E[\Theta \mid Y_{1:N}] \;\longrightarrow\; \Theta \quad \text{a.s.} \qquad \text{for } N \to \infty
 $$
 :::
 
@@ -150,11 +150,11 @@ $$
 :::
 
 ::: fragment
-- Uncertainty about $\theta$ stems entirely from the missing observations $Y_{n+1:\infty}$
+- Uncertainty about $\Theta$ stems entirely from the missing observations $Y_{n+1:\infty}$
 :::
 
 ::: fragment
-[Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\theta$ after observing $y_{1:n}$]{.then}
+[Generate possible realizations of $Y_{n+1:\infty}$ to quantify uncertainty about $\Theta$ after observing $y_{1:n}$]{.then}
 :::
 :::
 
@@ -301,7 +301,7 @@ $$
 $$
 :::
 
-[Predictive rule produces $Y_{n+1:N}$, yielding $\mathbb{E}[\theta \mid y_{1:n}, Y_{n+1:N}] \overset{\text{a.s.}}{\longrightarrow} \theta \sim \pi(\theta \mid y_{1:n})$ via Doob \[2\]]{.then}
+[Predictive rule produces $Y_{n+1:N}$, yielding $\bar\theta_N = \mathbb{E}[\Theta \mid y_{1:n}, Y_{n+1:N}] \overset{\text{a.s.}}{\longrightarrow} \Theta \sim \pi(\theta \mid y_{1:n})$ via Doob \[2\]]{.then}
 
 ## {.answer}
 
@@ -359,7 +359,7 @@ $E[P_\infty(y) \mid y_{1:n}] = P_n(y)$
 [What do the predictive distributions themselves converge to?]{.then}
 
 ## From the predictive to the martingale posterior
-[The predictive distribution converges to the empirical distribution of the completed data]{.subtitle}
+[Under c.i.d., predictive $P_N$ and empirical $F_N$ share the same limit $P_\infty = F_\infty$ \[5\]]{.subtitle}
 
 <iframe class="embed mp-steps" src="resources/pf_limit.html?steps&v=16"></iframe>
 
@@ -413,7 +413,7 @@ $\Leftrightarrow$
 
 $P(Y_{i+k} \le y \mid y_{1:i}) = P_i(y) \;\; \forall k \ge 1$
 
-[Given the data $y_{1:i}$, each future observation $Y_{i+1}, Y_{i+2}, \dots$ has distribution $P_i$]{style="font-size: 0.85em; color: #626468"}
+[**Conditioned** on the data $y_{1:i}$, each new observation $Y_{i+1}, Y_{i+2}, \dots$ has **identical** **distribution** $P_i$]{style="font-size: 0.85em; color: #626468"}
 :::
 :::
 ::::
